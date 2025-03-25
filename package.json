@@ -1,0 +1,25 @@
+{
+  "name": "aqukin",
+  "version": "1.0.0",
+  "main": "index.js",
+  "private": true,
+  "packageManager": "npm@11.2.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "co": "sui-mono commit",
+    "release": "sui-mono release",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "sui": "sui-mono"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@s-ui/mono": "^2.45.0",
+    "turbo": "^2.4.2"
+  }
+}

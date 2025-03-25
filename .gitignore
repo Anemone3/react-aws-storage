@@ -1,0 +1,23 @@
+# ⚡ Archivos de Node.js
+node_modules/
+dist/
+build/
+
+# ⚡ Archivos de configuración
+.env
+.env.local
+.env.*.local
+package-lock.json
+
+# ⚡ Caché y logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ⚡ Configuración de IDEs (VSCode, JetBrains)
+.vscode/
+.idea/
+
+# ⚡ Archivos específicos de TurboRepo
+.turbo/

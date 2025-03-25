@@ -1,9 +1,9 @@
 import express from "express";
-
+import cookieParser from "cookie-parser";
 import morgan from "morgan";
 import cors from "cors";
 import { errorHandler } from "./shared/errorHandler.js";
-import PinsRouter from "./routes/pins-router.js";
+import {  AppRouter } from "./routes/index.js";
 
 const app = express();
 
@@ -11,13 +11,13 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.use("/api", PinsRouter);
+app.use("/api", AppRouter.routes);
 
 app.use(errorHandler);
 app.listen(3000, () => {

@@ -1,5 +1,5 @@
 import { deleteFileFromS3, updloadFileToS3 } from "../services/s3-aws.js";
-import { createPinService } from "../services/pines-service.js";
+import { createPinService, getPinesById } from "../services/pines-service.js";
 import { ApiError } from "../config/apiError.js";
 
 export const createPins = async (req, res) => {
@@ -7,7 +7,7 @@ export const createPins = async (req, res) => {
 
   const { userId } = req.params;
 
-  const { title, description } = req.body;
+  const { title, description, link, collectionId } = req.body;
 
   if (!userId || !title || !description || !file) {
     throw new ApiError("Missing required fields", 400);
@@ -16,10 +16,10 @@ export const createPins = async (req, res) => {
   let keyObject;
 
   try {
-    const { key, url } = await updloadFileToS3(file,userId);
+    const { key, url } = await updloadFileToS3(file, userId);
 
     console.log(key);
-    
+
     keyObject = key;
 
     const result = await createPinService({
@@ -27,6 +27,8 @@ export const createPins = async (req, res) => {
       title,
       description,
       imageUrl: url,
+      link,
+      collectionId,
     });
 
     res.status(200).json({
@@ -46,5 +48,15 @@ export const createPins = async (req, res) => {
 };
 
 export const getPins = async (req, res, next) => {
-  res.status(200).json({ message: "pins " });
+  const { id } = req.params;
+
+  if (!id || isNaN(Number(id))) {
+    return res
+      .status(400)
+      .json({ message: "Id in params not exists or is not a number" });
+  }
+
+  const pin = await getPinesById(id);
+
+  res.status(200).json({ data: pin });
 };

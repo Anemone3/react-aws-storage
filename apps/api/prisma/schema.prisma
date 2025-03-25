@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+
+
+model Users {
+  id        String   @id @default(uuid()) @db.Uuid
+  email     String   @unique @db.VarChar()
+  username String  @unique @db.VarChar(60)
+  firstname      String @db.VarChar(20)
+  lastname      String @db.VarChar(20)
+  password  String @db.VarChar(100)
+  pins Pins[]
+  collections Collections[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Collections{
+  id Int @id @default(autoincrement())
+  name String @db.VarChar(25)
+  description String?
+  quantity Int @default(0)
+  isPublic Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId String @db.Uuid
+  user Users @relation(fields: [userId], references: [id])
+  pins  PinsOnCollections[]
+}
+
+
+
+model PinsOnCollections{
+  id Int @id @default(autoincrement())
+  pinId Int
+  collectionId Int
+  addedAt DateTime @default(now())
+  pin Pins @relation(fields: [pinId], references: [id],onDelete: Cascade)
+  collection Collections @relation(fields: [collectionId], references: [id],onDelete: Cascade)
+  @@unique([pinId, collectionId])
+}
+
+
+
+model Pins{
+  id Int @id @default(autoincrement()) 
+  userId String @db.Uuid
+  title String @db.VarChar(25)
+  description String?
+  imageUrl String
+  link String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user Users @relation(fields: [userId], references: [id])
+  collections PinsOnCollections[]
+}

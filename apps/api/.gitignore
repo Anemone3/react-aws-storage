@@ -23,6 +23,6 @@ pnpm-debug.log*
 .turbo/
 
 
-prisma
+prisma/migrations
 
 postgres

@@ -40,9 +40,12 @@ export const createPins = async (req, res) => {
       try {
         await deleteFileFromS3(keyObject);
       } catch (error) {
+        console.log(error);
+        
         throw error;
       }
     }
+    console.log(error);
     throw error;
   }
 };

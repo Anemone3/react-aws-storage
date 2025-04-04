@@ -8,13 +8,13 @@ export const getUserByEmail = async (email) => {
         email,
       },
     });
-  
+
     return user;
   } catch (error) {
-    if(error.code === 'P2025'){
-      throw ApiError('No se encontró el usuario con el email ingresado', 404);
-    }
-    throw error
+    throw new ApiError(
+      `${!email ? "Email is undefined" : `Fail to find email ${email}`}`,
+      404
+    );
   }
 };
 
@@ -26,7 +26,7 @@ export const createUser = async ({
   username,
 }) => {
   try {
-    const exists = await prisma.users.findFirst({where:{email}})
+    const exists = await prisma.users.findFirst({ where: { email } });
 
     if (exists) throw new ApiError("Ya existe una cuenta con este correo", 400);
 
@@ -42,7 +42,7 @@ export const createUser = async ({
 
     return user;
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw error;
   }
 };

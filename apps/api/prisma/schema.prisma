@@ -24,6 +24,7 @@ model Users {
   firstname      String @db.VarChar(20)
   lastname      String @db.VarChar(20)
   password  String @db.VarChar(100)
+  profileUrl String?
   pins Pins[]
   collections Collections[]
   createdAt DateTime @default(now())

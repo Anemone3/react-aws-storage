@@ -4,6 +4,8 @@ export const multerErrorHandler = (middleware) => {
   return (req, res, next) => {
     middleware(req, res, (err) => {
       if (err) {
+        console.log(err);
+        
         if (err instanceof MulterError) {
           return res.status(400).json({
             message: "Error al subir el archivo",

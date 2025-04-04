@@ -1,13 +1,17 @@
 import { createUser, getUserByEmail } from "../services/user-service.js";
 import { comparePassword, hashPassword } from "../shared/bcrypt.js";
-import { generateToken } from '../services/jwt-service.js'
+import { generateToken, verifyToken } from "../services/jwt-service.js";
+import { ApiError } from "../config/apiError.js";
+import { validateEmail } from "../shared/validateEmail.js";
+import { ACCESS_JWT_KEY } from "../config/config.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
-  if (!validateEmail(email) && password) {
+  if (!validateEmail(email)) {
     return res.status(400).json({ message: "El email no es válido" });
-  } else if (!password || !email) {
+  }
+  if (!password || !email) {
     return res
       .status(400)
       .json({ message: "Faltan campos (email or password)" });
@@ -21,13 +25,21 @@ export const login = async (req, res) => {
     if (!isMatched)
       return res.status(400).json({ message: "Invalid Credentials" });
 
+    const refreshToken = await generateToken(
+      { id: user.id, email: user.email },
+      "7d"
+    );
 
-        
-    const refreshToken = await  generateToken({id: user.id,email: user.email}, '7d')
+    const accessToken = await generateToken(
+      { id: user.id, email: user.email },
+      "15m"
+    );
 
-    const accessToken = await generateToken({id: user.id,email: user.email}, '15m')
-
-    res.cookie('refreshToken' , refreshToken, {httpOnly: true,secure: false, maxAge: 7 * 24 * 60 * 60 * 1000});
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
       message: "Logged succesfully",
@@ -56,38 +68,69 @@ export const register = async (req, res) => {
 
   const hashedPassword = hashPassword(password);
 
- try {
-    const user = await createUser({email,firstname,lastname,username: `${firstname}.${lastname}`,password: hashedPassword});
+  try {
+    const user = await createUser({
+      email,
+      firstname,
+      lastname,
+      username: `${firstname}.${lastname}`,
+      password: hashedPassword,
+    });
 
-    delete user.password
+    delete user.password;
 
-  
-    
-    const refreshToken = await  generateToken({id: user.id,email: user.email}, '7d')
+    const refreshToken = await generateToken(
+      { id: user.id, email: user.email },
+      "7d"
+    );
 
-    const accessToken = await  generateToken({id: user.id,email: user.email}, '15m')
+    const accessToken = await generateToken(
+      { id: user.id, email: user.email },
+      "15m"
+    );
 
-    res.cookie('refreshToken' , refreshToken, {expire : new Date() + 9999});
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     return res.status(200).json({
-        message: 'Register succesfully',
-        accessToken,
-        data: user
-    })
- } catch (error) {
+      message: "Register succesfully",
+      accessToken,
+      data: user,
+    });
+  } catch (error) {
     console.log(error);
-    
- }
-  
+  }
 };
 
-const validateEmail = (email) => {
-  if (
-    /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i.test(
-      email
-    )
-  ) {
-    return true;
+export const refreshAccessToken = async (req, res, next) => {
+  const { refreshToken } = req.cookies;
+  let payload;
+  if (!refreshToken)
+    return res
+      .status(401)
+      .json({ message: "Retry auth", error: "No token provider" });
+
+  try {
+    payload = await verifyToken(refreshToken, ACCESS_JWT_KEY);
+
+    const user = await getUserByEmail(payload.email);
+
+    const accessToken = await generateToken(
+      { id: user.id, email: user.email },
+      "15m"
+    );
+
+    delete user.password;
+
+    res.status(200).json({
+      message: "Authenticate",
+      accessToken: accessToken,
+      data: user,
+    });
+  } catch (error) {
+    next(error);
   }
-  return false;
 };

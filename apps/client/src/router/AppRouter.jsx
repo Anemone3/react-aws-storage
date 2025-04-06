@@ -2,36 +2,20 @@ import { Route, Routes } from "react-router";
 import SearchPage from "../pages/SearchPage";
 import App from "../App";
 import CollectionsPage from "../pages/CollectionsPage";
-import { useAuth } from "../hooks/useAuth";
-import { useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { clearAuthenticate, setAuthenticate } from "../redux/features/auth-slice";
+import AuthenticationRouter from "./AuthenticationRouter";
+import { lazy } from "react";
+
+const GalleryPage = lazy(() => import("../pages/GalleryPage"));
 
 function AppRouter() {
-  const { data,error } = useAuth();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (data) {
-      dispatch(
-        setAuthenticate({ user: data.data, accessToken: data.accessToken }),
-      );
-    }
-  }, [data]);
-
-  useEffect(() => {
-    if (error) {
-      dispatch(
-        clearAuthenticate(),
-      );
-    }
-  }, [error]);
-
   return (
     <Routes>
-      <Route element={<App />}>
-        <Route index element={<SearchPage />} />
-        <Route path="/collections/:userId" element={<CollectionsPage />} />
+      <Route element={<AuthenticationRouter />}>
+        <Route element={<App />}>
+          <Route index element={<SearchPage />} />
+          <Route path="/collections/:userId" element={<CollectionsPage />} />
+          <Route path="/gallery" element={<GalleryPage />} />
+        </Route>
       </Route>
     </Routes>
   );

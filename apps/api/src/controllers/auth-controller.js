@@ -47,9 +47,15 @@ export const login = async (req, res) => {
       data: user,
     });
   } catch (error) {
+    if (error instanceof ApiError) {
+      return res.status(error.status).json({ message: "Invalid Credentials" });
+    }
+
     if (error.code === "P2025") {
       throw new ApiError("No existe una cuenta creada con este correo.", 404);
     }
+
+    throw error;
   }
 };
 
@@ -110,7 +116,7 @@ export const refreshAccessToken = async (req, res, next) => {
   let payload;
   if (!refreshToken)
     return res
-      .status(401)
+      .status(403)
       .json({ message: "Retry auth", error: "No token provider" });
 
   try {
@@ -133,4 +139,9 @@ export const refreshAccessToken = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const logout = async (req, res) => {
+  res.clearCookie("refreshToken");
+  return res.status(200).json({ message: "Logged out successfully" });
 };

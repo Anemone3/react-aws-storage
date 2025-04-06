@@ -1,8 +1,8 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { clearAuthenticate, setAuthenticate } from "./features/auth-slice";
-import { authApi } from "./services/auth-api";
+import { getRefreshToken } from "./services/base-api";
 
-export const fetchBaseWithAuth = (baseUrl = "")=> async (args, api, extraOptions) => {
+export const fetchBaseWithAuth = (baseUrl = "") => async (args, api, extraOptions) => {
   const baseQuery = fetchBaseQuery({
     baseUrl: baseUrl,
     credentials: "include",
@@ -20,27 +20,26 @@ export const fetchBaseWithAuth = (baseUrl = "")=> async (args, api, extraOptions
 
 
   if (result.error) {
-    
-    if(result.error.status === 401){
+
+    if (result.error.status === 401) {
       try {
-        const {accessToken, data } = await api.dispatch(
-          authApi.endpoints.refreshToken.initiate()
-        ).unwrap();
-        
-        console.log(refreshResult);
-    
-        if(accessToken) {
-          api.dispatch(setAuthenticate({
-            accessToken: accessToken,
-            user: data
-          }));
-        }
-    
-          return baseQuery(args, api, extraOptions);
+
+        await getRefreshToken(api);
+        // **** Esto me da dependencia circular, el error: Uncaught ReferenceError: can't access lexical declaration 'fetchBaseWithAuth' before initialization ***///
+        // await api.dispatch(
+        //   authApi.endpoints.refreshToken.initiate()
+        // ).unwrap();
+
+
+
+
+
+        result = await baseQuery(args, api, extraOptions);
       } catch (error) {
         api.dispatch(clearAuthenticate());
+        //api.dispatch(authApi.util.resetApiState());
       }
-    }else if (result.error.status === 403) {
+    } else if (result.error.status === 403) {
       console.log('Acceso prohibido - limpiando autenticación');
       api.dispatch(clearAuthenticate());
     }

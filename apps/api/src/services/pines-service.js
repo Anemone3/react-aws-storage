@@ -6,17 +6,17 @@ export const createPinService = async ({
   title,
   description,
   imageUrl,
-  link,
   collectionId,
 }) => {
   try {
+    
     const pin = await prisma.pins.create({
       data: {
         userId,
         title,
         description,
         imageUrl,
-        link,
+        link: imageUrl,
         collections: collectionId
           ? {
               create: [
@@ -31,6 +31,7 @@ export const createPinService = async ({
           omit: { password: true },
         },
       },
+      
     });
 
     return pin;
@@ -44,22 +45,39 @@ export const createPinService = async ({
   }
 };
 
-
-export const getPinesById = async(id) => {
+export const getPinesById = async (id) => {
   try {
     const pin = await prisma.pins.findUniqueOrThrow({
-      where:{
-        id: Number(id)
-      }
-    })
+      where: {
+        id: Number(id),
+      },
+    });
 
     return pin;
-
   } catch (error) {
-    if(error.code === 'P2025'){
+    if (error.code === "P2025") {
       throw new ApiError("ID de pin no válido o inexistente.", 404);
-
     }
     throw new Error(error);
   }
-}
+};
+
+export const getAllPins = async () => {
+  try {
+    const pins = await prisma.pins.findMany({
+      include: {
+        collections: true,
+        user: {
+          omit: { password: true },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return pins;
+  } catch (error) {
+    throw new Error(error);
+  }
+};

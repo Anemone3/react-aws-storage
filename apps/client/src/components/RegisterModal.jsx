@@ -1,10 +1,10 @@
 import { useState } from "react";
-import passwordHidden from "../assets/password-hidden.svg";
-import passwordShow from "../assets/password-show.svg";
 import { useRegisterMutation } from "../redux/services/auth-api";
 import { useDispatch } from "react-redux";
 import { setAuthenticate } from "../redux/features/auth-slice";
 import { useModal } from "../hooks/useModal";
+import { Mail, Lock, User, ArrowRight, Eye, EyeOffIcon } from "lucide-react";
+import InputField from "./InputField";
 
 function RegisterModal() {
   const { hideModal } = useModal();
@@ -17,9 +17,17 @@ function RegisterModal() {
     confirmPassword: "",
   });
 
-  const [register, { isLoading, isError, error }] = useRegisterMutation();
+  const [register, { isLoading }] = useRegisterMutation();
 
   const dispatch = useDispatch();
+
+  const [errorField, setErrorField] = useState({
+    email: "",
+    password: "",
+    firstname: "",
+    lastname: "",
+    confirmPassword: "",
+  });
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -34,20 +42,36 @@ function RegisterModal() {
     }));
   };
 
-  const handleClick = () => {
+  const handlePassword = () => {
     setShowPassword((p) => !p);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email || !password || !firstname || !lastname) {
-      console.log("Todos los campos son obligatorios");
+    Object.keys(formState).forEach((key) => {
+      console.log(key);
+      if (formState[key] === "") {
+        setErrorField((p) => ({
+          ...p,
+          [key]: `${key} is required`,
+        }));
+      }
+    });
+
+    if (password.length < 6) {
+      setErrorField((p) => ({
+       ...p,
+        password: "La contraseña debe tener al menos 6 caracteres",
+      }));
       return;
     }
 
     if (password !== confirmPassword) {
-      console.log("Las contraseñas no coinciden");
+      setErrorField((p) => ({
+        ...p,
+        confirmPassword: "Las contraseñas no coinciden",
+      }));
       return;
     }
 
@@ -78,75 +102,96 @@ function RegisterModal() {
       hideModal();
     } catch (error) {
       console.log(error);
+      setErrorField((p) => ({
+        ...p,
+        confirmPassword: "Error al registrar",
+      }));
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-y-4">
-      <h3>Login</h3>
-      <label>Account</label>
-      <div className="flex w-full gap-x-4">
-        <input
-          className="flex-1 border border-gray-400 p-3"
-          type="text"
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="flex flex-row gap-x-3">
+        <InputField
+          label="First name"
           name="firstname"
-          placeholder="Firstname"
-          onChange={onInputChange}
-          value={firstname}
-        />
-        <input
-          className="flex-1 border border-gray-400 p-3"
           type="text"
-          placeholder="Lastname"
-          name="lastname"
+          icon={User}
+          value={firstname}
           onChange={onInputChange}
+        />
+        <InputField
+          label="Last name"
+          name="lastname"
+          type="text"
+          icon={User}
           value={lastname}
+          onChange={onInputChange}
         />
       </div>
-      <input
-        className="border border-gray-400 p-3"
-        type="email"
-        placeholder="Email"
+      {errorField.firstname && (
+        <p className="text-sm text-red-500">{errorField.firstname}</p>
+      )}
+      {errorField.lastname && (
+        <p className="text-sm text-red-500">{errorField.lastname}</p>
+      )}
+      <InputField
+        label="Correo electrónico"
         name="email"
-        onChange={onInputChange}
+        type="email"
+        icon={Mail}
         value={email}
+        onChange={onInputChange}
       />
+      {errorField.email && (
+        <p className="text-sm text-red-500">{errorField.email}</p>
+      )}
 
-      <div className="flex w-full gap-x-4">
-        <input
-          className="border border-gray-400 p-3"
-          type="password"
-          placeholder="Password 6 characters"
-          name="password"
+      <InputField
+        label="Contraseña"
+        name="password"
+        type="password"
+        icon={Lock}
+        value={password}
+        onChange={onInputChange}
+      />
+      {errorField.password && (
+        <p className="text-sm text-red-500">{errorField.password}</p>
+      )}
+
+      <div className="relative">
+        <InputField
+          label="Confirmar contraseña"
+          name="confirmPassword"
+          type={showPassword ? "text" : "password"}
+          icon={Lock}
+          value={confirmPassword}
           onChange={onInputChange}
-          value={password}
         />
-        <div className="relative flex w-full items-center">
-          <input
-            className="border border-gray-400 p-3"
-            type={showPassword ? "text" : "password"}
-            name="confirmPassword"
-            placeholder="Confirm Password"
-            onChange={onInputChange}
-            value={confirmPassword}
-          />
-          <span className="absolute right-3 cursor-pointer bg-transparent text-center">
-            <img
-              onClick={handleClick}
-              src={showPassword ? passwordShow : passwordHidden}
-              className="h-4 w-4"
-              alt={`icon password is ${showPassword ? "show" : "hidden"}`}
+
+        <div className="absolute right-3 bottom-0 -translate-y-3 transform cursor-pointer">
+          {showPassword ? (
+            <Eye className="text-gray-400" size={18} onClick={handlePassword} />
+          ) : (
+            <EyeOffIcon
+              className="text-gray-400"
+              size={18}
+              onClick={handlePassword}
             />
-          </span>
+          )}
         </div>
       </div>
-      <a>Register</a>
+      {errorField.confirmPassword && (
+        <p className="text-sm text-red-500">{errorField.confirmPassword}</p>
+      )}
+
       <button
-        disabled={isLoading}
         type="submit"
-        className="mt-auto cursor-pointer justify-items-end bg-cyan-400 p-2"
+        disabled={isLoading}
+        className="mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-gradient-to-r from-blue-500 to-blue-600 py-2.5 font-medium text-white shadow-md transition-all hover:from-blue-600 hover:to-blue-700 hover:shadow-lg"
       >
-        {isLoading ? "Cargando..." : "Iniciar sesión"}
+        Crear cuenta
+        <ArrowRight size={18} />
       </button>
     </form>
   );

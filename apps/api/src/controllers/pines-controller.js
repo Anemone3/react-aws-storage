@@ -1,5 +1,9 @@
 import { deleteFileFromS3, updloadFileToS3 } from "../services/s3-aws.js";
-import { createPinService, getPinesById } from "../services/pines-service.js";
+import {
+  createPinService,
+  getAllPins,
+  getPinesById,
+} from "../services/pines-service.js";
 import { ApiError } from "../config/apiError.js";
 
 export const createPins = async (req, res) => {
@@ -7,7 +11,7 @@ export const createPins = async (req, res) => {
 
   const { userId } = req.params;
 
-  const { title, description, link, collectionId } = req.body;
+  const { title, description, collectionId } = req.body;
 
   if (!userId || !title || !description || !file) {
     throw new ApiError("Missing required fields", 400);
@@ -27,7 +31,6 @@ export const createPins = async (req, res) => {
       title,
       description,
       imageUrl: url,
-      link,
       collectionId,
     });
 
@@ -41,7 +44,7 @@ export const createPins = async (req, res) => {
         await deleteFileFromS3(keyObject);
       } catch (error) {
         console.log(error);
-        
+
         throw error;
       }
     }
@@ -62,4 +65,14 @@ export const getPins = async (req, res, next) => {
   const pin = await getPinesById(id);
 
   res.status(200).json({ data: pin });
+};
+
+export const getAllPinsController = async (req, res, next) => {
+  const pins = await getAllPins();
+
+  if (!pins) {
+    return res.status(404).json({ message: "Pins not found" });
+  }
+
+  res.status(200).json({ data: pins });
 };

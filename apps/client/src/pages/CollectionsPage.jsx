@@ -63,7 +63,7 @@ function CollectionsPage() {
   const handleModal = () => setOpenModal(true);
   const handleCloseModal = () => setOpenModal(false);
 
-  const { data, isError, isLoading, error } = useGetAllCollectionsQuery(userId);
+  const { data, isLoading } = useGetAllCollectionsQuery(userId);
 
   const { showModal } = useModal();
 
@@ -72,10 +72,12 @@ function CollectionsPage() {
   return (
     <section className="relative container mx-auto flex max-w-screen flex-col items-center justify-center space-y-4">
       <button
-        onClick={() => showModal(<ModalPin collections={collections} userId={userId} />)}
-        className="absolute top-0 right-0"
+        onClick={() =>
+          showModal(<ModalPin collections={collections} userId={userId} />)
+        }
+        className="absolute top-5 right-6 cursor-pointer rounded-lg bg-pink-100 px-3 py-2 font-semibold text-slate-700 hover:bg-pink-300"
       >
-        Create Pin
+        Create a Pin
       </button>
       <h1 className="mt-5 bg-[url('/gradiend-bg@2x.png')] bg-cover bg-clip-text bg-center bg-no-repeat text-center text-6xl font-bold text-transparent">
         Collections
@@ -85,7 +87,7 @@ function CollectionsPage() {
         use under the
         <span className="pl-1 font-bold underline">Unsplash License</span>.
       </p>
-      <div className="mt-5 grid w-full grid-cols-3 gap-x-4 gap-y-5 min-[1340px]:mx-10 lg:container">
+      <div className="mt-5 grid w-full grid-cols-3 gap-x-4 gap-y-10 min-[1340px]:mx-10 lg:container">
         {isLoading && <p>loading ..</p>}
         {data && (
           <>

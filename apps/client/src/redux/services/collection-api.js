@@ -1,23 +1,11 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { baseApi } from "./base-api";
 
-export const collectionApi = createApi({
+export const collectionApi = baseApi.injectEndpoints({
   reducerPath: "collectionApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/api/collection",
-    prepareHeaders: (headers, { getState }) => {
-      const { accessToken } = getState().auth;
-
-      if (accessToken) {
-        headers.set("Authorization", `Bearer ${accessToken}`);
-      }
-      return headers;
-    },
-  }),
-  tagTypes: ["Collections"],
   endpoints: (builder) => ({
     getAllCollections: builder.query({
       query: (userId) => ({
-        url: `/${userId}`,
+        url: `/collection/${userId}`,
         method: "GET",
       }),
       providesTags: (result) =>
@@ -33,7 +21,7 @@ export const collectionApi = createApi({
     }),
     createCollection: builder.mutation({
       query: ({ userId, title }) => ({
-        url: `/${userId}/collections`,
+        url: `/collection/${userId}/collections`,
         body: {
           title,
         },

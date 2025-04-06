@@ -1,5 +1,8 @@
 import { useState } from "react";
 import CollectionPhotos from "./CollectionPhotos";
+import heroRight from "../assets/hero-right.png";
+import heroLeft from "../assets/hero-left.png";
+import bgGradient from "../assets/gradiend-bg.svg";
 
 function SearchPage() {
   const [isSearching, setIsSearching] = useState(false);
@@ -28,14 +31,14 @@ function SearchPage() {
         <div className="flex flex-1 items-center">
           <div className="flex flex-1 justify-start">
             <img
-              src="/hero-left.png"
+              src={heroLeft}
               className="h-full max-w-[90%] object-cover"
               alt="hero left"
             />
           </div>
           <div className="flex flex-1 justify-end">
             <img
-              src="/hero-right.png"
+              src={heroRight}
               className="h-full max-w-[90%] object-cover"
               alt="hero right"
             />
@@ -43,18 +46,20 @@ function SearchPage() {
         </div>
       ) : (
         <>
-          <img
-            src="/gradiend-bg.svg"
-            alt="bg-gradient"
-            className="h-[90px] w-full object-cover"
-          />
+          <div>
+            <img
+              src={bgGradient}
+              alt="bg-gradient"
+              className="h-[90px] w-full object-cover"
+            />
+          </div>
         </>
       )}
 
       <div
-        className={`flex flex-col space-y-4 transform transition-all duration-500 ease-in-out ${
+        className={`flex transform flex-col space-y-4 transition-all duration-500 ease-in-out ${
           isSearching
-            ? "absolute top-[5%] left-1/2 z-10 -translate-x-1/2 translate-y-0"
+            ? "absolute top-4 left-1/2 z-10 -translate-x-1/2 translate-y-0"
             : "absolute top-[40%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center"
         }`}
       >
@@ -72,9 +77,7 @@ function SearchPage() {
           placeholder="Enter your keywords..."
         />
       </div>
-      {
-        showImages && <CollectionPhotos/>
-      }
+      {showImages && <CollectionPhotos />}
     </section>
   );
 }

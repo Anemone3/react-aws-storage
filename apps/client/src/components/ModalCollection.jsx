@@ -10,7 +10,7 @@ export const ModalCollection = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const { user } = useSelector((state) => state.auth);
-//   const dispatch = useDispatch();
+  //   const dispatch = useDispatch();
   const { userId } = useParams();
   const [title, setTitle] = useState("");
 
@@ -22,7 +22,7 @@ export const ModalCollection = ({ isOpen, onClose }) => {
     useCreateCollectionMutation();
 
   const handleSaveClick = async () => {
-    if (title.length > 3) {
+    if (title.length > 2) {
       if (userId == user.id) {
         try {
           const result = await createCollection({
@@ -30,11 +30,11 @@ export const ModalCollection = ({ isOpen, onClose }) => {
             title,
           }).unwrap();
 
-        //   dispatch(
-        //     collectionApi.util.invalidateTags([
-        //       { type: "Collection", id: userId },
-        //     ]),
-        //   );
+          //   dispatch(
+          //     collectionApi.util.invalidateTags([
+          //       { type: "Collection", id: userId },
+          //     ]),
+          //   );
           console.log("Collection created:", result);
           onClose();
         } catch (error) {

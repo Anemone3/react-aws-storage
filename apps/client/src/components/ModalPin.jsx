@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useModal } from "../hooks/useModal";
 import { useCreatePinMutation } from "../redux/services/pin-api";
-
+import AddPinCard from "./AddPinCard";
+import { useNavigate } from "react-router";
 function ModalPin({ collections, userId }) {
+  const navigate = useNavigate();
 
   const [formState, setFormState] = useState({
     title: "",
@@ -10,19 +12,16 @@ function ModalPin({ collections, userId }) {
     collectionId: "",
     pin: null,
   });
-
   const [formErrors, setFormErrors] = useState({
     title: "",
     description: "",
     collectionId: "",
     pin: "",
   });
-
-  const [imagePreview, setImagePreview] = useState(null);
-
-  const [createPin, { data, error, isLoading }] = useCreatePinMutation();
+  const [createPin, { data, isLoading }] = useCreatePinMutation();
   const { title, description, collectionId } = formState;
   const { hideModal } = useModal();
+
   const onInputChange = ({ target }) => {
     const { name, value } = target;
 
@@ -32,47 +31,14 @@ function ModalPin({ collections, userId }) {
     }));
   };
 
-  const onFileChange = ({ target }) => {
-    const file = target.files[0];
-
-    if (file) {
-      const MAX_SIZE_MB = 30;
-      const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
-
-      if (!validTypes.includes(file.type)) {
-        setFormErrors(p => ({ ...p, pin: 'El archivo debe ser una imagen' }));
-        return;
-      }
-
-      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-        setFormErrors(p => ({ ...p, pin: 'El archivo es muy grande' }));
-        return;
-      }
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-      setFormState(p => ({ ...p, pin: file }));
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (imagePreview) {
-        URL.revokeObjectURL(imagePreview);
-      }
-    }
-  }, [imagePreview])
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({ ...formErrors });
 
-
-
-    const { pin, ...textType } = formState;
+    const { pin, collectionId, ...textType } = formState;
 
     const isValid = Object.values(textType).every((value) => {
       if (value === null) return false;
-      if (typeof value === 'string') return value.trim().length > 0;
+      if (typeof value === "string") return value.trim().length > 0;
       return true;
     });
 
@@ -82,84 +48,73 @@ function ModalPin({ collections, userId }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("collectionId", collectionId);
-
-    formData.append("file", pin)
-
-    const result = await createPin({ userId, formData }).unwrap();
-
-    if (result && result.message === 'Success') {
-      hideModal();
+    if (collectionId) {
+      formData.append("collectionId", collectionId);
     }
+    formData.append("file", pin);
 
+    try {
+      const result = await createPin({ userId, formData }).unwrap();
 
-  }
+      if (result && result.message === "Success") {
+        if (!collectionId) {
+          navigate(`/gallery`);
+          hideModal();
+        } else {
+          hideModal();
+        }
+      }
+    } catch (error) {
+      setFormErrors((p) => ({
+        ...p,
+        pin: "Error al subir la imagen",
+      }));
+    }
+  };
 
-
+  const onClose = () => {
+    hideModal();
+  };
 
   return (
-    <div className="relative h-96 w-4xl bg-white">
-      <button
-        onClick={hideModal}
-        className="bg-primary-dark text-darkness texz t-sm absolute top-4 right-4 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full font-semibold"
-      >
-        X
-      </button>
-      <form onSubmit={handleSubmit} className="flex flex-col py-4 m-5">
-        <label>Title</label>
-        <input
-          className="border border-gray-400 p-3"
-          type="text"
-          name="title"
-          value={title}
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/50 p-4">
+      <div className="animate-in fade-in w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl duration-300">
+        <div className="relative flex items-center justify-between border-b p-4">
+          <h2 className="text-xl font-semibold">Agregar imagen a la galería</h2>
+          <button
+            type="button"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100"
+            aria-label="Cerrar"
+            onClick={onClose}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <AddPinCard
+          handleSubmit={handleSubmit}
           onChange={onInputChange}
+          collections={collections}
+          formState={formState}
+          setFormState={setFormState}
+          onClose={onClose}
+          formErrors={formErrors}
+          setFormErrors={setFormErrors}
         />
-        <label>Descripcion</label>
-        <input
-          className="border border-gray-400 p-3"
-          type="text"
-          name="description"
-          value={description}
-          onChange={onInputChange}
-        />
-        <select
-          name="collectionId"
-          value={collectionId}
-          onChange={onInputChange}
-        >
-          <option value="">Selecciona una colección</option>
-          {collections.length === 0 ? (
-            <option disabled>No hay colecciones</option>
-          ) : (
-            collections.map((collection) => (
-              <option key={collection.id} value={collection.id}>
-                {collection.name}
-              </option>
-            ))
-          )}
-        </select>
-        <label>Add pin</label>
-        <input
-          className="border border-gray-400 p-3"
-          type="file"
-          accept="image/*"
-          onChange={onFileChange}
-
-        />
-        {imagePreview && (
-          <div className="mt-2">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="max-h-40 object-cover"
-            />
-          </div>
-        )}
-        {formErrors.pin && (
-          <p className="text-red-500 text-sm mt-1">{formErrors.pin}</p>
-        )}
-        <button disabled={isLoading} className="p-4 bg-primary-dark m-4" type="submit">send</button>
-      </form>
+      </div>
     </div>
   );
 }

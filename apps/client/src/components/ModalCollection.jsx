@@ -35,7 +35,7 @@ export const ModalCollection = ({ isOpen, onClose }) => {
           //       { type: "Collection", id: userId },
           //     ]),
           //   );
-          console.log("Collection created:", result);
+          // console.log("Collection created:", result);
           onClose();
         } catch (error) {
           console.error("Error al crear la colección:", error);

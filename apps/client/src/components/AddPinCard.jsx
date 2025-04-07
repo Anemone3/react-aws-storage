@@ -19,7 +19,7 @@ const AddPinCard = ({
   const handleFileChange = ({ target }) => {
     const file = target.files?.[0] || null;
 
-    console.log(target.files);
+    // console.log(target.files);
     if (file) {
       const valid = validateFile(file);
       if (!valid) return;

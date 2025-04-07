@@ -12,14 +12,14 @@ export const useAuthentication = () => {
   useEffect(() => {
     if (!hasRefreshed.current) {
       const checkAuth = async () => {
-        console.log("Verificando Token");
+        // console.log("Verificando Token");
 
         try {
           console.log(hasRefreshed);
 
           await refreshToken().unwrap();
         } catch (error) {
-          console.error("Auth failed:", error);
+          // console.error("Auth failed:", error);
         }
       };
 

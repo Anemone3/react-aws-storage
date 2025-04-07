@@ -42,7 +42,7 @@ export const authApi = baseApi.injectEndpoints({
       }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
-          console.log("refreshToken desde el onQueryStarted authApiSlice");
+          // console.log("refreshToken desde el onQueryStarted authApiSlice");
           const { data: resultRefreshToken } = await queryFulfilled;
 
           if (!resultRefreshToken) return;

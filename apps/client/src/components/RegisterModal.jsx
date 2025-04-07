@@ -50,7 +50,7 @@ function RegisterModal() {
     e.preventDefault();
 
     Object.keys(formState).forEach((key) => {
-      console.log(key);
+      // console.log(key);
       if (formState[key] === "") {
         setErrorField((p) => ({
           ...p,

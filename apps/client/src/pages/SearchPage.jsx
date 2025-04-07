@@ -16,7 +16,6 @@ function SearchPage() {
 
     setInputValue(value);
 
-    console.log(inputValue);
 
     if (value === "") {
       setIsSearching(false);

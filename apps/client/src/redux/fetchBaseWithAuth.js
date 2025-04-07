@@ -40,7 +40,7 @@ export const fetchBaseWithAuth = (baseUrl = "") => async (args, api, extraOption
         //api.dispatch(authApi.util.resetApiState());
       }
     } else if (result.error.status === 403) {
-      console.log('Acceso prohibido - limpiando autenticación');
+      // console.log('Acceso prohibido - limpiando autenticación');
       api.dispatch(clearAuthenticate());
     }
 

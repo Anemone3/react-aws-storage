@@ -19,69 +19,66 @@ export const pinApi = baseApi.injectEndpoints({
           const result = await queryFulfilled;
           //console.log("Full response:", result);
 
-          if (!result?.data) {
-            //console.error("No data in response");
-            return;
-          }
+          if (!result.data?.data) return;
 
           const createdPin = result.data;
 
-          if (!createdPin.collections || createdPin.collections.length === 0) {
-            dispatch(
-              pinApi.util.updateQueryData("getPins", undefined, (draft) => {
-                if (!draft.data) {
-                  //draft.data = []
-                  return;
-                }
-                if (!draft.data.some((pin) => pin.id === createdPin.data.id)) {
-                  draft.data.unshift(createdPin.data);
-                }
-              }),
-            );
-
-            return;
-          }
-
+          // console.log("Created Pin:", createdPin);
           dispatch(
-            collectionApi.util.updateQueryData(
-              "getAllCollections",
-              userId,
-              (draft) => {
-                console.log("Draft Data:", current(draft));
-                if (draft.collections?.length === 0 || !draft.collections) {
-                  console.log("Invalid collections structure:", current(draft));
-                  return draft;
-                }
-
-                const collectionsIdList = createdPin.data?.collections.map(
-                  (c) => c.collectionId,
-                );
-
-                const collection = draft.collections.find((c) =>
-                  collectionsIdList.includes(c.id),
-                );
-
-                console.log("Found collection:", current(collection));
-
-                if (collection) {
-                  collection.pins.push({
-                    id: createdPin.data.id,
-                    userId: createdPin.data.userId,
-                    title: createdPin.data.title,
-                    image: createdPin.data.image,
-                    description: createdPin.data.description,
-                    imageUrl: createdPin.data.imageUrl,
-                    createdAt: createdPin.data.createdAt,
-                    updatedAt: createdPin.data.updatedAt,
-                  });
-                  /* Me faltó retornar quantity en el backend */
-                  // collection.quantity += 1;
-                }
-
-                return draft;
-              },
-            ),
+            pinApi.util.updateQueryData("getPins", undefined, (draft) => {
+              if (!draft.data.some((pin) => pin.id === createdPin.data.id)) {
+                draft.data.unshift(createdPin.data);
+              }
+            }),
           );
+
+          if (!createdPin.data?.collections) return;
+
+          if (createdPin.data?.collections?.length > 0) {
+            dispatch(
+              collectionApi.util.updateQueryData(
+                "getAllCollections",
+                userId,
+                (draft) => {
+                  // console.log("Draft Data:", current(draft));
+                  if (draft.collections?.length === 0 || !draft.collections) {
+                    console.log(
+                      "Invalid collections structure:",
+                      current(draft),
+                    );
+                    return draft;
+                  }
+
+                  const collectionsIdList = createdPin.data?.collections.map(
+                    (c) => c.collectionId,
+                  );
+
+                  const collection = draft.collections.find((c) =>
+                    collectionsIdList.includes(c.id),
+                  );
+
+                  if (collection) {
+                    if (
+                      !collection.pins.some((p) => p.id === createdPin.data.id)
+                    ) {
+                      collection.pins.push({
+                        id: createdPin.data.id,
+                        userId: createdPin.data.userId,
+                        title: createdPin.data.title,
+                        image: createdPin.data.image,
+                        description: createdPin.data.description,
+                        imageUrl: createdPin.data.imageUrl,
+                        createdAt: createdPin.data.createdAt,
+                        updatedAt: createdPin.data.updatedAt,
+                      });
+                    }
+                  }
+
+                  return draft;
+                },
+              ),
+            );
+          }
         } catch (error) {
           console.error("Error in onQueryStarted:", error);
         }

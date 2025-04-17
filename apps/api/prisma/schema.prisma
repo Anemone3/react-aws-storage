@@ -20,7 +20,7 @@ model Users {
   firstname   String        @db.VarChar(20)
   lastname    String        @db.VarChar(20)
   password    String        @db.VarChar(100)
-  profileUrl  String?       @default("https://d2mx8x2zaiqruv.cloudfront.net/3f4a9bfb-e983-4383-9726-7860faa1ace7/46d519230f926687-10f1943e2dfd8c4b99fe71bb5956da5e.jpg")
+  profileUrl  String?       @default("https://d2mx8x2zaiqruv.cloudfront.net/public/icon.png")
   pins        Pins[]
   collections Collections[]
   createdAt   DateTime      @default(now())

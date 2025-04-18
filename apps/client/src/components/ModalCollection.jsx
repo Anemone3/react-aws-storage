@@ -1,25 +1,22 @@
-import { useDispatch, useSelector } from "react-redux";
-import {
-  collectionApi,
-  useCreateCollectionMutation,
-} from "../redux/services/collection-api";
-import { useState } from "react";
-import { useParams } from "react-router";
+import { useDispatch, useSelector } from 'react-redux';
+import { collectionApi, useCreateCollectionMutation } from '../redux/services/collection-api';
+import { useState } from 'react';
+import { data, useParams } from 'react-router';
+import { toast } from 'sonner';
 
 export const ModalCollection = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector(state => state.auth);
   //   const dispatch = useDispatch();
   const { userId } = useParams();
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState('');
 
   const handleChange = ({ target }) => {
     setTitle(target.value);
   };
 
-  const [createCollection, { isLoading, isError }] =
-    useCreateCollectionMutation();
+  const [createCollection, { isLoading, isError }] = useCreateCollectionMutation();
 
   const handleSaveClick = async () => {
     if (title.length > 2) {
@@ -29,16 +26,21 @@ export const ModalCollection = ({ isOpen, onClose }) => {
             userId: user.id,
             title,
           }).unwrap();
-
+          console.log(result);
           //   dispatch(
           //     collectionApi.util.invalidateTags([
           //       { type: "Collection", id: userId },
           //     ]),
           //   );
           // console.log("Collection created:", result);
+
+          const nameCollection = result.data?.name;
+
+          toast.success(`collection created successfully ${nameCollection}`);
           onClose();
         } catch (error) {
-          console.error("Error al crear la colección:", error);
+          toast.error('Error creating a collection');
+          console.error('Error al crear la colección:', error);
         }
       }
     }
@@ -59,16 +61,13 @@ export const ModalCollection = ({ isOpen, onClose }) => {
         {isError && <p>Error al crear una collecion</p>}
         <div className="flex gap-x-5">
           <button
-            disabled={isLoading ? true : false}
+            disabled={isLoading}
             onClick={handleSaveClick}
             className="cursor-pointer rounded-sm bg-gray-200 px-7 py-2 font-semibold hover:bg-gray-300 active:bg-gray-400"
           >
             Save
           </button>
-          <button
-            className="active:bg-primary-dark cursor-pointer rounded-sm bg-transparent px-7 py-2 font-semibold"
-            onClick={onClose}
-          >
+          <button className="active:bg-primary-dark cursor-pointer rounded-sm bg-transparent px-7 py-2 font-semibold" onClick={onClose}>
             Cancel
           </button>
         </div>

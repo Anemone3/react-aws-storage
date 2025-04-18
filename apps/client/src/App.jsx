@@ -1,6 +1,7 @@
-import { Outlet } from "react-router";
-import Navbar from "./components/Navbar";
-import { ModalProvider } from "./context/ModalProvider";
+import { Outlet } from 'react-router';
+import Navbar from './components/Navbar';
+import { ModalProvider } from './context/ModalProvider';
+import { Toaster } from 'sonner';
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
           <Outlet />
         </main>
       </div>
+      <Toaster />
     </ModalProvider>
   );
 }

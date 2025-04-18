@@ -11,20 +11,11 @@ export const getUserByEmail = async (email) => {
 
     return user;
   } catch (error) {
-    throw new ApiError(
-      `${!email ? "Email is undefined" : `Fail to find email ${email}`}`,
-      404
-    );
+    throw new ApiError(`${!email ? "Email is undefined" : `Fail to find email ${email}`}`, 404);
   }
 };
 
-export const createUser = async ({
-  email,
-  password,
-  firstname,
-  lastname,
-  username,
-}) => {
+export const createUser = async ({ email, password, firstname, lastname, username }) => {
   try {
     const exists = await prisma.users.findFirst({ where: { email } });
 
@@ -43,6 +34,28 @@ export const createUser = async ({
     return user;
   } catch (error) {
     console.log(error);
+    throw error;
+  }
+};
+
+export const updateUserProps = async (args, userId) => {
+  try {
+    const exists = await prisma.users.findFirst({ where: { id: userId } });
+
+    if (!exists) throw new ApiError("Usuario no authorizado", 401);
+
+    const user = await prisma.users.update({
+      data: {
+        ...args,
+      },
+      where: {
+        id: userId,
+      },
+    });
+
+    delete user.password;
+    return user;
+  } catch (error) {
     throw error;
   }
 };

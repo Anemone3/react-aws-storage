@@ -1,5 +1,5 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { clearAuthenticate, setAuthenticate } from "./features/auth-slice";
+import { clearAuthenticate } from "./features/auth-slice";
 import { getRefreshToken } from "./services/base-api";
 
 export const fetchBaseWithAuth = (baseUrl = "") => async (args, api, extraOptions) => {

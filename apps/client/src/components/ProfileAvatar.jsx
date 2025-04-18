@@ -1,14 +1,19 @@
-import { useEffect, useRef, useState } from "react";
-import avatarDefault from "../assets/avatar-default.svg";
-import { useSendLogoutMutation } from "../redux/services/auth-api";
+import { useEffect, useRef, useState } from 'react';
+import avatarDefault from '../assets/avatar-default.svg';
+import { useSendLogoutMutation } from '../redux/services/auth-api';
+import { useModal } from '../hooks/useModal';
+import ModalSettings from './ModalSettings';
 
 const ProfileAvatar = ({ profileUrl }) => {
   const [dropDown, setDropDown] = useState(false);
+
+  const { showModal } = useModal();
+
   const divRef = useRef(null);
   const [logout, { isLoading, isSuccess }] = useSendLogoutMutation();
-  const toggleDropdown = () => setDropDown((prev) => !prev);
+  const toggleDropdown = () => setDropDown(prev => !prev);
 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = event => {
     if (divRef.current && !divRef.current.contains(event.target)) {
       setDropDown(false);
     }
@@ -21,10 +26,10 @@ const ProfileAvatar = ({ profileUrl }) => {
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
     return () => {
       if (isSuccess) {
-        document.removeEventListener("click", handleClickOutside);
+        document.removeEventListener('click', handleClickOutside);
       }
     };
   }, []);
@@ -40,10 +45,10 @@ const ProfileAvatar = ({ profileUrl }) => {
       />
       {dropDown && (
         <div className="bg-darkness text-secondary absolute top-10 right-0 z-30 rounded-md shadow-lg">
-          <button
-            onClick={handleLogout}
-            className="hover:bg-primary hover:text-darkness cursor-pointer px-4 py-2"
-          >
+          <button onClick={() => showModal(<ModalSettings />)} className="hover:bg-primary hover:text-darkness cursor-pointer px-4 py-2">
+            settings
+          </button>
+          <button onClick={handleLogout} className="hover:bg-primary hover:text-darkness cursor-pointer px-4 py-2">
             logout
           </button>
         </div>

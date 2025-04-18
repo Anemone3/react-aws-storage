@@ -8,7 +8,7 @@ import ProfileAvatar from "./ProfileAvatar";
 const ItemsNav = [
   { path: "/", name: "Home" },
   { path: "gallery", name: "Gallery" },
-  { path: "collections", name: "Collections" },
+  { path: "collections", name: "My Collections" },
 ];
 
 function Navbar() {

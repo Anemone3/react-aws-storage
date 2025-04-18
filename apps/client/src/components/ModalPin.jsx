@@ -1,44 +1,46 @@
-import { useState } from "react";
-import { useModal } from "../hooks/useModal";
-import { useCreatePinMutation } from "../redux/services/pin-api";
-import AddPinCard from "./AddPinCard";
-import { useNavigate } from "react-router";
-function ModalPin({ collections, userId }) {
+import { useState } from 'react';
+import { useModal } from '../hooks/useModal';
+import { useCreatePinMutation } from '../redux/services/pin-api';
+import AddPinCard from './AddPinCard';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
+
+function ModalPin({ collections, userId, collectionId: collectionIndex }) {
   const navigate = useNavigate();
 
   const [formState, setFormState] = useState({
-    title: "",
-    description: "",
-    collectionId: "",
+    title: '',
+    description: '',
+    collectionId: collectionIndex || '',
     pin: null,
   });
   const [formErrors, setFormErrors] = useState({
-    title: "",
-    description: "",
-    collectionId: "",
-    pin: "",
+    title: '',
+    description: '',
+    collectionId: '',
+    pin: '',
   });
   const [createPin, { data, isLoading }] = useCreatePinMutation();
-  const { title, description, collectionId } = formState;
+  const { title, description } = formState;
   const { hideModal } = useModal();
 
   const onInputChange = ({ target }) => {
     const { name, value } = target;
 
-    setFormState((p) => ({
+    setFormState(p => ({
       ...p,
       [name]: value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     const { pin, collectionId, ...textType } = formState;
 
-    const isValid = Object.values(textType).every((value) => {
+    const isValid = Object.values(textType).every(value => {
       if (value === null) return false;
-      if (typeof value === "string") return value.trim().length > 0;
+      if (typeof value === 'string') return value.trim().length > 0;
       return true;
     });
 
@@ -46,17 +48,18 @@ function ModalPin({ collections, userId }) {
     if (!pin) return;
 
     const formData = new FormData();
-    formData.append("title", title);
-    formData.append("description", description);
+    formData.append('title', title);
+    formData.append('description', description);
     if (collectionId) {
-      formData.append("collectionId", collectionId);
+      formData.append('collectionId', collectionId);
     }
-    formData.append("file", pin);
+    formData.append('file', pin);
 
     try {
       const result = await createPin({ userId, formData }).unwrap();
 
-      if (result && result.message === "Success") {
+      if (result && result.message === 'Success') {
+        toast.success('Pin created successfully');
         if (!collectionId) {
           navigate(`/gallery`);
           hideModal();
@@ -65,10 +68,11 @@ function ModalPin({ collections, userId }) {
         }
       }
     } catch (error) {
-      setFormErrors((p) => ({
+      setFormErrors(p => ({
         ...p,
-        pin: "Error al subir la imagen",
+        pin: 'Error al subir la imagen',
       }));
+      toast.error('Error to upload image');
     }
   };
 

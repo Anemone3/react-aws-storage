@@ -45,9 +45,7 @@ export class AuthMiddleware {
     ({ request = "params", key = "userId" }) =>
     (req, res, next) => {
       if (!req.user || !req.user.id) {
-        return res
-          .status(401)
-          .json({ message: "Unauthorized: Missing or invalid token" });
+        return res.status(401).json({ message: "Unauthorized: Missing or invalid token" });
       }
 
       const id = req[request]?.[key];
@@ -59,9 +57,7 @@ export class AuthMiddleware {
       }
 
       if (String(id) !== req.user.id) {
-        return res
-          .status(403)
-          .json({ message: "Unauthorized access", error: "Non-owner" });
+        return res.status(403).json({ message: "Unauthorized access", error: "Non-owner" });
       }
 
       next();

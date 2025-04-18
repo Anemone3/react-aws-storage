@@ -1,16 +1,7 @@
-import { useState } from "react";
-import ImageDrag from "./ImageDrag";
+import { useState } from 'react';
+import ImageDrag from './ImageDrag';
 
-const AddPinCard = ({
-  handleSubmit,
-  formState,
-  onChange,
-  collections,
-  setFormState,
-  onClose,
-  formErrors,
-  setFormErrors,
-}) => {
+const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormState, onClose, formErrors, setFormErrors }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -18,12 +9,11 @@ const AddPinCard = ({
 
   const handleFileChange = ({ target }) => {
     const file = target.files?.[0] || null;
-
     // console.log(target.files);
     if (file) {
       const valid = validateFile(file);
       if (!valid) return;
-      setFormState((p) => ({ ...p, pin: file }));
+      setFormState(p => ({ ...p, pin: file }));
       const reader = new FileReader();
       reader.onload = () => {
         setImagePreview(reader.result);
@@ -32,7 +22,7 @@ const AddPinCard = ({
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     setIsDragging(false);
 
@@ -40,7 +30,7 @@ const AddPinCard = ({
     if (file) {
       const valid = validateFile(file);
       if (!valid) return;
-      setFormState((p) => ({ ...p, pin: file }));
+      setFormState(p => ({ ...p, pin: file }));
       const reader = new FileReader();
       reader.onload = () => {
         setImagePreview(reader.result);
@@ -50,23 +40,23 @@ const AddPinCard = ({
   };
 
   const handleRemoveImage = () => {
-    setFormState((p) => ({ ...p, pin: null }));
+    setFormState(p => ({ ...p, pin: null }));
     setImagePreview(null);
   };
-  const validateFile = (file) => {
+  const validateFile = file => {
     const MAX_SIZE_MB = 1;
-    const validTypes = ["image/png", "image/jpeg", "image/webp"];
+    const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
 
     if (!validTypes.includes(file.type)) {
-      setFormErrors((p) => ({
+      setFormErrors(p => ({
         ...p,
-        pin: `El archivo debe ser una imagen ${validTypes.filter((v) => v !== file.type).map((v) => v.replace("image/", ""))}`,
+        pin: `El archivo debe ser una imagen ${validTypes.filter(v => v !== file.type).map(v => v.replace('image/', ''))}`,
       }));
       return false;
     }
 
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      setFormErrors((p) => ({
+      setFormErrors(p => ({
         ...p,
         pin: `El archivo pesa ${(file.size / (1024 * 1024)).toFixed(2)} MB  (max ${MAX_SIZE_MB} MB)`,
       }));
@@ -80,10 +70,7 @@ const AddPinCard = ({
       <div className="space-y-6 p-6">
         {/* Título */}
         <div className="space-y-2">
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
             Título
           </label>
           <input
@@ -100,10 +87,7 @@ const AddPinCard = ({
 
         {/* Descripción */}
         <div className="space-y-2">
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
             Descripción
           </label>
           <textarea
@@ -118,10 +102,7 @@ const AddPinCard = ({
 
         {/* Colección */}
         <div className="space-y-2">
-          <label
-            htmlFor="collection"
-            className="block text-sm font-medium text-gray-700"
-          >
+          <label htmlFor="collection" className="block text-sm font-medium text-gray-700">
             Colección
           </label>
           <select
@@ -132,15 +113,13 @@ const AddPinCard = ({
             onChange={onChange}
           >
             <option value="">Selecciona una colección</option>
-            {collections.map((col) => (
+            {collections.map(col => (
               <option key={col.id} value={col.id}>
                 {col.name}
               </option>
             ))}
           </select>
-          {formErrors.collectionId && (
-            <p className="text-sm text-red-500">{formErrors.collectionId}</p>
-          )}
+          {formErrors.collectionId && <p className="text-sm text-red-500">{formErrors.collectionId}</p>}
         </div>
 
         {/* Imagen */}
@@ -153,9 +132,7 @@ const AddPinCard = ({
           isDragging={isDragging}
           setIsDragging={setIsDragging}
         />
-        {formErrors.pin && (
-          <p className="text-sm text-red-500">{formErrors.pin}</p>
-        )}
+        {formErrors.pin && <p className="text-sm text-red-500">{formErrors.pin}</p>}
       </div>
 
       {/* Footer */}

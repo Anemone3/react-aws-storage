@@ -117,6 +117,7 @@ function ModalPin({ collections, userId, collectionId: collectionIndex }) {
           onClose={onClose}
           formErrors={formErrors}
           setFormErrors={setFormErrors}
+          isLoading={isLoading}
         />
       </div>
     </div>

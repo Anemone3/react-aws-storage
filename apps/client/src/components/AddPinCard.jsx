@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ImageDrag from './ImageDrag';
 
-const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormState, onClose, formErrors, setFormErrors }) => {
+const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormState, onClose, formErrors, setFormErrors, isLoading }) => {
   const [imagePreview, setImagePreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -146,6 +146,7 @@ const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormSta
         </button>
         <button
           type="submit"
+          disabled={isLoading}
           className="flex cursor-pointer items-center gap-1 rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
         >
           <svg
@@ -162,7 +163,7 @@ const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormSta
           >
             <polyline points="20 6 9 17 4 12"></polyline>
           </svg>
-          Guardar imagen
+          {isLoading ? 'Guardando..' : 'Guardar imagen'}
         </button>
       </div>
     </form>

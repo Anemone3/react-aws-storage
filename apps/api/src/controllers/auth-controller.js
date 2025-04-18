@@ -12,9 +12,7 @@ export const login = async (req, res) => {
     return res.status(400).json({ message: "El email no es válido" });
   }
   if (!password || !email) {
-    return res
-      .status(400)
-      .json({ message: "Faltan campos (email or password)" });
+    return res.status(400).json({ message: "Faltan campos (email or password)" });
   }
 
   try {
@@ -22,22 +20,15 @@ export const login = async (req, res) => {
 
     const isMatched = comparePassword(password, passwordUser);
 
-    if (!isMatched)
-      return res.status(400).json({ message: "Invalid Credentials" });
+    if (!isMatched) return res.status(400).json({ message: "Invalid Credentials" });
 
-    const refreshToken = await generateToken(
-      { id: user.id, email: user.email },
-      "7d"
-    );
+    const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
 
-    const accessToken = await generateToken(
-      { id: user.id, email: user.email },
-      "15m"
-    );
+    const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV !== "development",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -63,9 +54,7 @@ export const register = async (req, res) => {
   const { email, password, firstname, lastname } = req.body;
 
   if (!email || !password || !firstname || !lastname) {
-    return res
-      .status(400)
-      .json({ message: "Faltan campos (email, password, firstname,lastname)" });
+    return res.status(400).json({ message: "Faltan campos (email, password, firstname,lastname)" });
   }
 
   if (!validateEmail(email)) {
@@ -85,19 +74,13 @@ export const register = async (req, res) => {
 
     delete user.password;
 
-    const refreshToken = await generateToken(
-      { id: user.id, email: user.email },
-      "7d"
-    );
+    const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
 
-    const accessToken = await generateToken(
-      { id: user.id, email: user.email },
-      "15m"
-    );
+    const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV !== "development",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -114,20 +97,14 @@ export const register = async (req, res) => {
 export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
   let payload;
-  if (!refreshToken)
-    return res
-      .status(403)
-      .json({ message: "Retry auth", error: "No token provider" });
+  if (!refreshToken) return res.status(403).json({ message: "Retry auth", error: "No token provider" });
 
   try {
     payload = await verifyToken(refreshToken, ACCESS_JWT_KEY);
 
     const user = await getUserByEmail(payload.email);
 
-    const accessToken = await generateToken(
-      { id: user.id, email: user.email },
-      "15m"
-    );
+    const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
 
     delete user.password;
 

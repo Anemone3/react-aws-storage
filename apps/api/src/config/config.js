@@ -11,6 +11,10 @@ export const envsSchema = z.object({
   CDN_URL: z.string().min(1, "CDN_URL is required"),
   ACCESS_JWT_KEY: z.string().min(1, "ACCESS_JWT_KEY is required"),
   PORT: z.string().min(1, "PORT is required").default("3000"),
+  GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
+  GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),
+  GOOGLE_CALLBACK_URL: z.string().min(1, "GOOGLE_CALLBACK_URL is required"),
+  FRONTEND_URL: z.string().min(1, "FRONTEND_URL is required"),
 });
 
 const { success, data, error } = envsSchema.safeParse(process.env);
@@ -27,5 +31,9 @@ export const {
   AWS_REGION,
   CDN_URL,
   ACCESS_JWT_KEY,
-  PORT
+  PORT,
+  GOOGLE_CALLBACK_URL,
+  GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET,
+  FRONTEND_URL,
 } = data;

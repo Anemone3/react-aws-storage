@@ -3,7 +3,7 @@ import { comparePassword, hashPassword } from "../shared/bcrypt.js";
 import { generateToken, verifyToken } from "../services/jwt-service.js";
 import { ApiError } from "../config/apiError.js";
 import { validateEmail } from "../shared/validateEmail.js";
-import { ACCESS_JWT_KEY } from "../config/config.js";
+import { ACCESS_JWT_KEY, FRONTEND_URL } from "../config/config.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -16,7 +16,11 @@ export const login = async (req, res) => {
   }
 
   try {
-    const { password: passwordUser, ...user } = await getUserByEmail(email);
+    const { password: passwordUser, provider, ...user } = await getUserByEmail(email);
+
+    if (provider !== "LOCAL") {
+      return res.status(400).json({ message: "This email is authenticate with other provider" });
+    }
 
     const isMatched = comparePassword(password, passwordUser);
 
@@ -124,3 +128,59 @@ export const logout = async (req, res) => {
   res.clearCookie("refreshToken");
   return res.status(200).json({ message: "Logged out successfully" });
 };
+
+export const googleAuthCallback = async (req, res) => {
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({ message: "No se pudo autenticar con Google" });
+  }
+
+  const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
+  const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    sameSite: "None",
+    secure: process.env.NODE_ENV !== "development",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+
+  // return res.status(200).json({
+  //   message: "Logged successfully with Google",
+  //   accessToken,
+  //   data: user,
+  // });
+  const redirectUrl = `${FRONTEND_URL}`;
+
+  return res.redirect(redirectUrl);
+};
+
+// export const googleAuthCallback = async (req, res) => {
+//   passport.authenticate("google", (err, user) => {
+//     if (err) {
+//       return res.status(500).json({ message: "Error al autenticar con Google" });
+//     }
+
+//     if (!user) {
+//       return res.status(401).json({ message: "No se pudo autenticar con Google" });
+//     }
+
+//     const refreshToken = generateToken({ id: user.id, email: user.email }, "7d");
+
+//     const accessToken = generateToken({ id: user.id, email: user.email }, "15m");
+
+//     res.cookie("refreshToken", refreshToken, {
+//       httpOnly: true,
+//       sameSite: "None",
+//       secure: process.env.NODE_ENV !== "development",
+//       maxAge: 7 * 24 * 60 * 60 * 1000,
+//     });
+
+//     return res.status(200).json({
+//       message: "Logged succesfully",
+//       accessToken,
+//       data: user,
+//     });
+//   })(req, res);
+// };

@@ -5,6 +5,7 @@ import cors from "cors";
 import { errorHandler } from "./shared/errorHandler.js";
 import { AppRouter } from "./routes/index.js";
 import { PORT } from "./config/config.js";
+import passport from "./config/passport.js";
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.use(
   })
 );
 app.use(cookieParser());
+
+app.use(passport.initialize());
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

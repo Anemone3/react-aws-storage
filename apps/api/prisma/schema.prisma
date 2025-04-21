@@ -19,12 +19,23 @@ model Users {
   username    String        @unique @db.VarChar(60)
   firstname   String        @db.VarChar(20)
   lastname    String        @db.VarChar(20)
-  password    String        @db.VarChar(100)
+  password    String?       @db.VarChar(100)
   profileUrl  String?       @default("https://d2mx8x2zaiqruv.cloudfront.net/public/icon.png")
+  providerId  String?       @unique @db.VarChar(100)
+  provider    ProviderAuth  @default(LOCAL)
   pins        Pins[]
   collections Collections[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+}
+
+enum ProviderAuth {
+  LOCAL
+  GOOGLE
+  GITHUB
+  FACEBOOK
+  TWITTER
+  DISCORD
 }
 
 model Collections {

@@ -120,7 +120,7 @@ function LoginModal() {
       <button
         type="button"
         onClick={() => {
-          window.location.href = 'http://localhost:3000/api/auth/google';
+          window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
         }}
         className="cursor-pointer flex items-center justify-center gap-3 w-full max-w-sm px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow hover:bg-gray-100 transition"
       >

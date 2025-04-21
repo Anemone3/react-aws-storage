@@ -122,7 +122,7 @@ function LoginModal() {
         onClick={() => {
           window.location.href = 'http://localhost:3000/api/auth/google';
         }}
-        className="flex items-center justify-center gap-3 w-full max-w-sm px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow hover:bg-gray-100 transition"
+        className="cursor-pointer flex items-center justify-center gap-3 w-full max-w-sm px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg shadow hover:bg-gray-100 transition"
       >
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/1200px-Google_%22G%22_logo.svg.png"

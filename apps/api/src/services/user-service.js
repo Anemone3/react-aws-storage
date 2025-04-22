@@ -15,6 +15,23 @@ export const getUserByEmail = async (email) => {
   }
 };
 
+export const getUserByProvider = async (provider, providerId) => {
+  try {
+    const user = await prisma.users.findUniqueOrThrow({
+      where: {
+        providerId,
+        AND: {
+          provider,
+        },
+      },
+    });
+
+    return user;
+  } catch (error) {
+    throw new ApiError(`${!provider ? "Provider is undefined" : `Fail to find provider ${provider}`}`, 404);
+  }
+};
+
 export const createUser = async ({ email, password, firstname, lastname, username }) => {
   try {
     const exists = await prisma.users.findFirst({ where: { email } });

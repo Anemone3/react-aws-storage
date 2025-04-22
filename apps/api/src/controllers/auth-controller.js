@@ -1,4 +1,4 @@
-import { createUser, getUserByEmail } from "../services/user-service.js";
+import { createUser, getUserByEmail, getUserByProvider } from "../services/user-service.js";
 import { comparePassword, hashPassword } from "../shared/bcrypt.js";
 import { generateToken, verifyToken } from "../services/jwt-service.js";
 import { ApiError } from "../config/apiError.js";
@@ -103,15 +103,36 @@ export const register = async (req, res) => {
 export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
 
-  console.log(req.cookies, refreshToken);
+  let tokenProvider = refreshToken || req.cookies.provideAuth;
 
-  if (!refreshToken) return res.status(403).json({ message: "Retry auth", error: "No token provider" });
+  if (refreshToken && req.cookies.provideAuth) {
+    tokenProvider = refreshToken;
+  }
+
   let payload;
 
   try {
-    payload = await verifyToken(refreshToken, ACCESS_JWT_KEY);
+    payload = await verifyToken(tokenProvider, ACCESS_JWT_KEY);
 
-    const user = await getUserByEmail(payload.email);
+    if (!payload) {
+      return res.status(403).json({ message: "Retry auth", error: "No token provider" });
+    }
+
+    let user;
+    if (payload.provide) {
+      user = await getUserByProvider(payload.provideId, payload.provide);
+
+      const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite: NODE_ENV !== "development" ? "None" : "Lax",
+        secure: NODE_ENV !== "development",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+    } else {
+      user = await getUserByEmail(payload.email);
+    }
 
     const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
 
@@ -127,6 +148,25 @@ export const refreshAccessToken = async (req, res, next) => {
   }
 };
 
+export const googleAuthCallback = async (req, res) => {
+  const user = req.user;
+
+  if (!user) {
+    return res.status(401).json({ message: "No se pudo autenticar con Google" });
+  }
+  const provideAuth = await generateToken({ id: user.provideId, provide: user.provide, success: true }, "1m");
+
+  const redirectUrl = `${FRONTEND_URL}`;
+  res.cookie("provideAuth", provideAuth, {
+    httpOnly: true,
+    sameSite: "Lax",
+    secure: true,
+    maxAge: 1 * 60 * 1000, // 1 minute
+  });
+
+  return res.redirect(redirectUrl);
+};
+
 export const logout = async (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
@@ -137,59 +177,3 @@ export const logout = async (req, res) => {
 
   return res.status(200).json({ message: "Logged out successfully" });
 };
-
-export const googleAuthCallback = async (req, res) => {
-  const user = req.user;
-
-  if (!user) {
-    return res.status(401).json({ message: "No se pudo autenticar con Google" });
-  }
-
-  const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
-
-  const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    sameSite: NODE_ENV !== "development" ? "None" : "Lax",
-    secure: NODE_ENV !== "development",
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  });
-  // return res.status(200).json({
-  //   message: "Logged successfully with Google",
-  //   accessToken,
-  //   data: user,
-  // });
-  const redirectUrl = `${FRONTEND_URL}`;
-
-  return res.redirect(redirectUrl);
-};
-
-// export const googleAuthCallback = async (req, res) => {
-//   passport.authenticate("google", (err, user) => {
-//     if (err) {
-//       return res.status(500).json({ message: "Error al autenticar con Google" });
-//     }
-
-//     if (!user) {
-//       return res.status(401).json({ message: "No se pudo autenticar con Google" });
-//     }
-
-//     const refreshToken = generateToken({ id: user.id, email: user.email }, "7d");
-
-//     const accessToken = generateToken({ id: user.id, email: user.email }, "15m");
-
-//     res.cookie("refreshToken", refreshToken, {
-//       httpOnly: true,
-//       sameSite: "None",
-//       secure: process.env.NODE_ENV !== "development",
-//       maxAge: 7 * 24 * 60 * 60 * 1000,
-//     });
-
-//     return res.status(200).json({
-//       message: "Logged succesfully",
-//       accessToken,
-//       data: user,
-//     });
-//   })(req, res);
-// };

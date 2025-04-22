@@ -163,22 +163,11 @@ export const googleAuthCallback = async (req, res) => {
 
   const redirectUrl = `${FRONTEND_URL}`;
 
-  const cookieOptions = {
+  res.cookie("provideAuth", provideAuth, {
     httpOnly: true,
-    sameSite: "lax",
-    secure: true,
-    maxAge: 1 * 60 * 1000, // 1 minute
-  };
-
-  if (process.env.COOKIE_SUBDOMAIN) {
-    console.log("Subdomain cookie", process.env.COOKIE_SUBDOMAIN);
-    cookieOptions.sameSite = "none";
-    cookieOptions.secure = true;
-    cookieOptions.path = "/";
-    cookieOptions.domain = process.env.COOKIE_SUBDOMAIN;
-  }
-
-  res.cookie("provideAuth", provideAuth, cookieOptions);
+    sameSite: "None",
+    secure: false,
+  });
 
   return res.redirect(redirectUrl);
 };

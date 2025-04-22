@@ -32,7 +32,7 @@ export const login = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "None",
+      sameSite: NODE_ENV !== "development" ? "None" : "Lax",
       secure: NODE_ENV !== "development",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -85,7 +85,7 @@ export const register = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      sameSite: "None",
+      sameSite: NODE_ENV !== "development" ? "None" : "Lax",
       secure: NODE_ENV !== "development",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -130,7 +130,7 @@ export const refreshAccessToken = async (req, res, next) => {
 export const logout = async (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    sameSite: "None",
+    sameSite: NODE_ENV !== "development" ? "None" : "Lax",
     secure: NODE_ENV !== "development",
   });
   res.status(200).json({ message: "Logged out" });
@@ -151,7 +151,7 @@ export const googleAuthCallback = async (req, res) => {
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    sameSite: "None",
+    sameSite: NODE_ENV !== "development" ? "None" : "Lax",
     secure: NODE_ENV !== "development",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });

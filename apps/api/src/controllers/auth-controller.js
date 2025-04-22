@@ -123,6 +123,8 @@ export const refreshAccessToken = async (req, res, next) => {
       console.log("Entre desde el provider", { ...payload });
       user = await getUserByProvider(payload.provider, payload.providerId);
 
+      res.clearCookie("provideAuth");
+
       const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
 
       res.cookie("refreshToken", refreshToken, {
@@ -157,28 +159,22 @@ export const googleAuthCallback = async (req, res) => {
     return res.status(401).json({ message: "No se pudo autenticar con Google" });
   }
 
-  console.log("User from google", user);
-
   const provideAuth = await generateToken({ id: user.providerId, provider: user.provider, success: true }, "1m");
 
   const redirectUrl = `${FRONTEND_URL}`;
 
   res.cookie("provideAuth", provideAuth, {
     httpOnly: true,
-    sameSite: "None",
-    secure: false,
+    sameSite: NODE_ENV === "development" ? "lax" : "none",
+    secure: NODE_ENV !== "development",
+    maxAge: 1 * 30 * 1000,
   });
 
   return res.redirect(redirectUrl);
 };
 
 export const logout = async (req, res) => {
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    sameSite: NODE_ENV !== "development" ? "None" : "Lax",
-    secure: NODE_ENV !== "development",
-  });
-  res.status(200).json({ message: "Logged out" });
+  res.clearCookie("refreshToken");
 
   return res.status(200).json({ message: "Logged out successfully" });
 };

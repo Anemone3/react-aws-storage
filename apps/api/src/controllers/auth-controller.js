@@ -102,7 +102,7 @@ export const register = async (req, res) => {
 
 export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
-  console.log("COOKIES DISPONIBLES:", req.cookies);
+  //console.log("COOKIES DISPONIBLES:", req.cookies);
 
   //console.log("body", req.body);
   let tokenProvider = refreshToken || req.body.provideAuth;
@@ -124,7 +124,7 @@ export const refreshAccessToken = async (req, res, next) => {
     let user;
     if (payload.provider) {
       console.log("Entre desde el provider", { ...payload });
-      user = await getUserByProvider(payload.provider, payload.providerId);
+      user = await getUserByProvider(payload.provider, payload.id);
 
       res.clearCookie("provideAuth");
 
@@ -166,12 +166,12 @@ export const googleAuthCallback = async (req, res) => {
 
   const redirectUrl = `${FRONTEND_URL}/success?auth=${provideAuth}`;
 
-  res.cookie("provideAuth", provideAuth, {
-    httpOnly: true,
-    sameSite: NODE_ENV === "development" ? "Lax" : "None",
-    secure: NODE_ENV !== "development",
-    maxAge: 2 * 60 * 1000,
-  });
+  // res.cookie("provideAuth", provideAuth, {
+  //   httpOnly: true,
+  //   sameSite: NODE_ENV === "development" ? "Lax" : "None",
+  //   secure: NODE_ENV !== "development",
+  //   maxAge: 2 * 60 * 1000,
+  // });
 
   return res.redirect(redirectUrl);
 };

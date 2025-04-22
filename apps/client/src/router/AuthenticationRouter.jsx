@@ -12,13 +12,15 @@ const AuthenticationRouter = () => {
 
   useEffect(() => {
     if (data && data.accessToken) {
-      if (location.pathname === '/success') {
-        navigate('/', { replace: -1 });
+      if (location.pathname === '/success' && tokenProvider) {
+        // If the user is already authenticated and the token provider is present, redirect to the home page
+        navigate('/', { replace: true });
       }
+      //   navigate('/', { replace: true });
     } else if (data && !data.accessToken) {
       navigate('/login', { replace: true });
     }
-  }, [data]);
+  }, [data, tokenProvider]);
 
   return <Outlet />;
 };

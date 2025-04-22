@@ -17,7 +17,7 @@ router.get(
   "/google",
   passport.authenticate("google", {
     scope: ["profile", "email"], // -> [profile] -> me da el nombre y la foto de perfil, [email] -> me da el correo electrónico
-    prompt: "select_account",
+    prompt: "consent select_account",
   })
 );
 router.get("/google/callback", passport.authenticate("google", { session: false, failureRedirect: "/" }), googleAuthCallback);

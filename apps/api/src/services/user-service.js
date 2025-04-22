@@ -17,10 +17,15 @@ export const getUserByEmail = async (email) => {
 
 export const getUserByProvider = async (provider, providerId) => {
   try {
+    if (!providerId) throw new ApiError("ProviderId is undefined", 404);
+    if (!provider) throw new ApiError("Provider is undefined", 404);
+
     const user = await prisma.users.findFirstOrThrow({
       where: {
         providerId: providerId,
-        provider: provider,
+        AND: {
+          provider: provider,
+        },
       },
     });
 

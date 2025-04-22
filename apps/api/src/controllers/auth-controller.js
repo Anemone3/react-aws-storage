@@ -119,8 +119,9 @@ export const refreshAccessToken = async (req, res, next) => {
     }
 
     let user;
-    if (payload.provide) {
-      user = await getUserByProvider(payload.provideId, payload.provide);
+    if (payload.provider) {
+      console.log("Entre desde el provider", { ...payload });
+      user = await getUserByProvider(payload.providerId, payload.provider);
 
       const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
 
@@ -131,6 +132,7 @@ export const refreshAccessToken = async (req, res, next) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
     } else {
+      console.log("Entre desde el email", { ...payload });
       user = await getUserByEmail(payload.email);
     }
 
@@ -154,7 +156,10 @@ export const googleAuthCallback = async (req, res) => {
   if (!user) {
     return res.status(401).json({ message: "No se pudo autenticar con Google" });
   }
-  const provideAuth = await generateToken({ id: user.provideId, provide: user.provide, success: true }, "1m");
+
+  console.log("User from google", user);
+
+  const provideAuth = await generateToken({ id: user.providerId, provider: user.provider, success: true }, "1m");
 
   const redirectUrl = `${FRONTEND_URL}`;
   res.cookie("provideAuth", provideAuth, {

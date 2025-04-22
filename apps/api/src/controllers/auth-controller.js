@@ -177,7 +177,11 @@ export const googleAuthCallback = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
-  res.clearCookie("refreshToken");
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    sameSite: NODE_ENV !== "development" ? "None" : "Lax",
+    secure: NODE_ENV !== "development",
+  });
 
   return res.status(200).json({ message: "Logged out successfully" });
 };

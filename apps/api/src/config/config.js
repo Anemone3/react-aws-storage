@@ -16,6 +16,7 @@ export const envsSchema = z.object({
   GOOGLE_CALLBACK_URL: z.string().min(1, "GOOGLE_CALLBACK_URL is required"),
   FRONTEND_URL: z.string().min(1, "FRONTEND_URL is required"),
   BACKEND_URL: z.string().min(1, "BACKEND_URL is required"),
+  NODE_ENV: z.enum(["development", "production"]).default("development"),
 });
 
 const { success, data, error } = envsSchema.safeParse(process.env);
@@ -38,4 +39,5 @@ export const {
   GOOGLE_CLIENT_SECRET,
   FRONTEND_URL,
   BACKEND_URL,
+  NODE_ENV,
 } = data;

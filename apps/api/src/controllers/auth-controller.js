@@ -3,7 +3,7 @@ import { comparePassword, hashPassword } from "../shared/bcrypt.js";
 import { generateToken, verifyToken } from "../services/jwt-service.js";
 import { ApiError } from "../config/apiError.js";
 import { validateEmail } from "../shared/validateEmail.js";
-import { ACCESS_JWT_KEY, FRONTEND_URL } from "../config/config.js";
+import { ACCESS_JWT_KEY, FRONTEND_URL, NODE_ENV } from "../config/config.js";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
@@ -33,7 +33,7 @@ export const login = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "None",
-      secure: process.env.NODE_ENV !== "development",
+      secure: NODE_ENV !== "development",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -86,7 +86,7 @@ export const register = async (req, res) => {
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       sameSite: "None",
-      secure: process.env.NODE_ENV !== "development",
+      secure: NODE_ENV !== "development",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -102,8 +102,11 @@ export const register = async (req, res) => {
 
 export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
-  let payload;
+
+  console.log(req.cookies, refreshToken);
+
   if (!refreshToken) return res.status(403).json({ message: "Retry auth", error: "No token provider" });
+  let payload;
 
   try {
     payload = await verifyToken(refreshToken, ACCESS_JWT_KEY);
@@ -125,7 +128,13 @@ export const refreshAccessToken = async (req, res, next) => {
 };
 
 export const logout = async (req, res) => {
-  res.clearCookie("refreshToken");
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    sameSite: "None",
+    secure: NODE_ENV !== "development",
+  });
+  res.status(200).json({ message: "Logged out" });
+
   return res.status(200).json({ message: "Logged out successfully" });
 };
 
@@ -137,15 +146,15 @@ export const googleAuthCallback = async (req, res) => {
   }
 
   const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
+
   const accessToken = await generateToken({ id: user.id, email: user.email }, "15m");
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     sameSite: "None",
-    secure: process.env.NODE_ENV !== "development",
+    secure: NODE_ENV !== "development",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
-
   // return res.status(200).json({
   //   message: "Logged successfully with Google",
   //   accessToken,

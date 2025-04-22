@@ -165,12 +165,14 @@ export const googleAuthCallback = async (req, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    sameSite: "Lax",
+    sameSite: "lax",
     secure: true,
     maxAge: 1 * 60 * 1000, // 1 minute
   };
 
   if (process.env.COOKIE_SUBDOMAIN) {
+    console.log("Subdomain cookie", process.env.COOKIE_SUBDOMAIN);
+
     cookieOptions.domain = process.env.COOKIE_SUBDOMAIN;
   }
 

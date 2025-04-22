@@ -121,7 +121,7 @@ export const refreshAccessToken = async (req, res, next) => {
     let user;
     if (payload.provider) {
       console.log("Entre desde el provider", { ...payload });
-      user = await getUserByProvider(payload.providerId, payload.provider);
+      user = await getUserByProvider(payload.provider, payload.providerId);
 
       const refreshToken = await generateToken({ id: user.id, email: user.email }, "7d");
 

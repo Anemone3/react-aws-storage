@@ -17,12 +17,10 @@ export const getUserByEmail = async (email) => {
 
 export const getUserByProvider = async (provider, providerId) => {
   try {
-    const user = await prisma.users.findUniqueOrThrow({
+    const user = await prisma.users.findFirstOrThrow({
       where: {
-        providerId,
-        AND: {
-          provider,
-        },
+        providerId: providerId,
+        provider: provider,
       },
     });
 

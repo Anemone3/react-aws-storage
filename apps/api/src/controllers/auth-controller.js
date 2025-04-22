@@ -104,10 +104,10 @@ export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
   console.log("COOKIES DISPONIBLES:", req.cookies);
 
-  let tokenProvider = refreshToken || req.cookies.provideAuth;
-  console.log("Token provider google", req.cookies.provideAuth);
+  //console.log("body", req.body);
+  let tokenProvider = refreshToken || req.body.provideAuth;
 
-  if (refreshToken && req.cookies.provideAuth) {
+  if (refreshToken && req.body.provideAuth) {
     tokenProvider = refreshToken;
   }
 
@@ -162,9 +162,9 @@ export const googleAuthCallback = async (req, res) => {
     return res.status(401).json({ message: "No se pudo autenticar con Google" });
   }
 
-  const provideAuth = await generateToken({ id: user.providerId, provider: user.provider, success: true }, "1m");
+  const provideAuth = await generateToken({ id: user.providerId, provider: user.provider, success: true }, "30s");
 
-  const redirectUrl = `${FRONTEND_URL}`;
+  const redirectUrl = `${FRONTEND_URL}/success?auth=${provideAuth}`;
 
   res.cookie("provideAuth", provideAuth, {
     httpOnly: true,

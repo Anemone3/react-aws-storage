@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { useRefreshTokenMutation } from '../redux/services/auth-api';
 import { useSelector } from 'react-redux';
-import { Axis3D } from 'lucide-react';
 
-export const useAuthentication = () => {
+export const useAuthentication = body => {
   const hasRefreshed = useRef(false);
 
   const [refreshToken, { data, error, isLoading }] = useRefreshTokenMutation();
@@ -11,16 +10,23 @@ export const useAuthentication = () => {
   const { accessToken } = useSelector(state => state.auth);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (!hasRefreshed.current) {
-        hasRefreshed.current = true;
-        refreshToken(accessToken);
-      }
-    }, 5000);
+    if (!hasRefreshed.current) {
+      const checkAuth = async () => {
+        // console.log("Verificando Token");
+        console.log('body', body);
+        try {
+          console.log(hasRefreshed);
 
-    return () => {
-      clearTimeout(timer);
-    };
+          await refreshToken(body).unwrap();
+        } catch (error) {
+          // console.error("Auth failed:", error);
+        }
+      };
+
+      if (!accessToken) checkAuth();
+    }
+
+    return () => (hasRefreshed.current = true);
   }, []);
 
   return { data, isLoading, error };

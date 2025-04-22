@@ -36,9 +36,12 @@ export const authApi = baseApi.injectEndpoints({
       },
     }),
     refreshToken: builder.mutation({
-      query: () => ({
+      query: tokenProvider => ({
         url: '/auth/token',
         method: 'POST',
+        body: {
+          provideAuth: tokenProvider,
+        },
       }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {

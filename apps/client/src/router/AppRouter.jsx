@@ -1,11 +1,11 @@
-import { Route, Routes } from "react-router";
-import SearchPage from "../pages/SearchPage";
-import App from "../App";
-import CollectionsPage from "../pages/CollectionsPage";
-import AuthenticationRouter from "./AuthenticationRouter";
-import { lazy } from "react";
+import { Route, Routes } from 'react-router';
+import SearchPage from '../pages/SearchPage';
+import App from '../App';
+import CollectionsPage from '../pages/CollectionsPage';
+import AuthenticationRouter from './AuthenticationRouter';
+import { lazy } from 'react';
 
-const GalleryPage = lazy(() => import("../pages/GalleryPage"));
+const GalleryPage = lazy(() => import('../pages/GalleryPage'));
 
 function AppRouter() {
   return (
@@ -15,6 +15,7 @@ function AppRouter() {
           <Route index element={<SearchPage />} />
           <Route path="/collections/:userId" element={<CollectionsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="*" element={<SearchPage />} />
         </Route>
       </Route>
     </Routes>

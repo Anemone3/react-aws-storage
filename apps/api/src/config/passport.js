@@ -32,7 +32,7 @@ passport.use(
             where: { providerId: profile.id },
             update: {
               firstname: profile.name.givenName,
-              lastname: profile.name.familyName,
+              lastname: profile.name.familyName || "",
               email: profile.emails[0].value,
               profileUrl: profile.photos[0].value,
               username: `${profile.name.givenName}.${profile.name.familyName}`,
@@ -41,10 +41,10 @@ passport.use(
               providerId: profile.id,
               provider: "GOOGLE",
               firstname: profile.name.givenName,
-              lastname: profile.name.familyName,
+              lastname: profile.name.familyName || "",
               email: profile.emails[0].value,
               profileUrl: profile.photos[0].value,
-              username: `${profile.name.givenName}.${profile.name.familyName}`,
+              username: `${profile.name.givenName}.${profile.name.familyName || ""}`,
             },
           });
           delete user.password;

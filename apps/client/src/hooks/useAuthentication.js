@@ -1,32 +1,26 @@
-import { useEffect, useRef } from "react";
-import { useRefreshTokenMutation } from "../redux/services/auth-api";
-import { useSelector } from "react-redux";
+import { useEffect, useRef } from 'react';
+import { useRefreshTokenMutation } from '../redux/services/auth-api';
+import { useSelector } from 'react-redux';
+import { Axis3D } from 'lucide-react';
 
 export const useAuthentication = () => {
   const hasRefreshed = useRef(false);
 
   const [refreshToken, { data, error, isLoading }] = useRefreshTokenMutation();
 
-  const { accessToken } = useSelector((state) => state.auth);
+  const { accessToken } = useSelector(state => state.auth);
 
   useEffect(() => {
-    if (!hasRefreshed.current) {
-      const checkAuth = async () => {
-        // console.log("Verificando Token");
+    const timer = setTimeout(() => {
+      if (!hasRefreshed.current) {
+        hasRefreshed.current = true;
+        refreshToken(accessToken);
+      }
+    }, 1000);
 
-        try {
-          console.log(hasRefreshed);
-
-          await refreshToken().unwrap();
-        } catch (error) {
-          // console.error("Auth failed:", error);
-        }
-      };
-
-      if (!accessToken) checkAuth();
-    }
-
-    return () => (hasRefreshed.current = true);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   return { data, isLoading, error };

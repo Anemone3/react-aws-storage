@@ -169,7 +169,7 @@ export const googleAuthCallback = async (req, res) => {
   res.cookie("provideAuth", provideAuth, {
     httpOnly: true,
     sameSite: NODE_ENV === "development" ? "lax" : "none",
-    secure: NODE_ENV !== "development",
+    secure: false,
     maxAge: 2 * 60 * 1000,
   });
 

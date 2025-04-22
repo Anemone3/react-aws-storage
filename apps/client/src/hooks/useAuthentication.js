@@ -16,7 +16,7 @@ export const useAuthentication = () => {
         hasRefreshed.current = true;
         refreshToken(accessToken);
       }
-    }, 1000);
+    }, 5000);
 
     return () => {
       clearTimeout(timer);

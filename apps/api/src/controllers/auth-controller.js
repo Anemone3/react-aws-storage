@@ -104,6 +104,7 @@ export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
 
   let tokenProvider = refreshToken || req.cookies.provideAuth;
+  console.log("Token provider google", req.cookies.provideAuth);
 
   if (refreshToken && req.cookies.provideAuth) {
     tokenProvider = refreshToken;
@@ -112,6 +113,7 @@ export const refreshAccessToken = async (req, res, next) => {
   let payload;
 
   try {
+    console.log("Token provider", tokenProvider);
     payload = await verifyToken(tokenProvider, ACCESS_JWT_KEY);
 
     if (!payload) {

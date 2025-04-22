@@ -8,6 +8,7 @@ export const authApi = baseApi.injectEndpoints({
         url: '/auth/login',
         method: 'POST',
         body: credentials,
+        credentials: 'include',
       }),
     }),
     register: builder.mutation({
@@ -15,12 +16,14 @@ export const authApi = baseApi.injectEndpoints({
         url: '/auth/register',
         method: 'POST',
         body: credentials,
+        credentials: 'include',
       }),
     }),
     sendLogout: builder.mutation({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
+        credentials: 'include',
       }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {
@@ -39,6 +42,7 @@ export const authApi = baseApi.injectEndpoints({
       query: () => ({
         url: '/auth/token',
         method: 'POST',
+        credentials: 'include',
       }),
       onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         try {

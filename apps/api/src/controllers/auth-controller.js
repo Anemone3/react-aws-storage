@@ -166,6 +166,7 @@ export const googleAuthCallback = async (req, res) => {
     httpOnly: true,
     sameSite: "Lax",
     secure: true,
+    domain: `.${FRONTEND_URL}`,
     maxAge: 1 * 60 * 1000, // 1 minute
   });
 

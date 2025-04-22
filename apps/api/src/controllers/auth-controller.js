@@ -102,6 +102,7 @@ export const register = async (req, res) => {
 
 export const refreshAccessToken = async (req, res, next) => {
   const { refreshToken } = req.cookies;
+  console.log("COOKIES DISPONIBLES:", req.cookies);
 
   let tokenProvider = refreshToken || req.cookies.provideAuth;
   console.log("Token provider google", req.cookies.provideAuth);
@@ -169,7 +170,7 @@ export const googleAuthCallback = async (req, res) => {
     httpOnly: true,
     sameSite: NODE_ENV === "development" ? "lax" : "none",
     secure: NODE_ENV !== "development",
-    maxAge: 1 * 30 * 1000,
+    maxAge: 2 * 60 * 1000,
   });
 
   return res.redirect(redirectUrl);

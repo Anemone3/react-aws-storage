@@ -167,9 +167,9 @@ export const googleAuthCallback = async (req, res) => {
   const redirectUrl = `${FRONTEND_URL}`;
 
   res.cookie("provideAuth", provideAuth, {
-    httpOnly: true,
+    httpOnly: false,
     sameSite: NODE_ENV === "development" ? "lax" : "none",
-    secure: false,
+    secure: true,
     maxAge: 2 * 60 * 1000,
   });
 

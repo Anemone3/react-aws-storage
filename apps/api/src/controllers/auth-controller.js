@@ -162,13 +162,19 @@ export const googleAuthCallback = async (req, res) => {
   const provideAuth = await generateToken({ id: user.providerId, provider: user.provider, success: true }, "1m");
 
   const redirectUrl = `${FRONTEND_URL}`;
-  res.cookie("provideAuth", provideAuth, {
+
+  const cookieOptions = {
     httpOnly: true,
     sameSite: "Lax",
     secure: true,
-    domain: `.${FRONTEND_URL}`,
     maxAge: 1 * 60 * 1000, // 1 minute
-  });
+  };
+
+  if (process.env.COOKIE_SUBDOMAIN) {
+    cookieOptions.domain = process.env.COOKIE_SUBDOMAIN;
+  }
+
+  res.cookie("provideAuth", provideAuth, cookieOptions);
 
   return res.redirect(redirectUrl);
 };

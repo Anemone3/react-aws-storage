@@ -30,8 +30,23 @@ export const getAllCollectionByUser = async (id) => {
       },
       include: {
         pins: {
+          include: {
+            pin: {
+              include: {
+                user: {
+                  omit: {
+                    password: true,
+                    providerId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        user: {
           select: {
-            pin: true,
+            profileUrl: true,
+            username: true,
           },
         },
       },
@@ -58,10 +73,7 @@ export const addPinCollectionByPinId = async (collectionId, pinId, id) => {
   });
   if (existingRelation) {
     if (existingRelation.collection.userId !== String(id)) {
-      throw new ApiError(
-        "El pin no pertenece a la colección de este usuario",
-        403
-      );
+      throw new ApiError("El pin no pertenece a la colección de este usuario", 403);
     }
     throw new ApiError("El pin ya está agregado en la colección", 400);
   }

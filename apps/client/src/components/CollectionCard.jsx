@@ -5,12 +5,14 @@
  * @param {number} props.quantity - Cantidad de elementos en la colección.
  */
 
-function CollectionCard({ images = [], category, handleModal }) {
-  const filledImages = images.length < 3 ? [...images, ...Array(3 - images.length).fill(null)] : images;
+import { Link } from 'react-router';
+
+function CollectionCard({ images: pins = [], collectionId, userId, handleModal, quantity, category }) {
+  const filledImages = pins.length < 3 ? [...pins, ...Array(3 - pins.length).fill(null)] : pins;
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-lg bg-white shadow-sm">
-      {images.length > 0 ? (
+      {pins.length > 0 ? (
         <div onClick={handleModal} className="grid h-64 grid-cols-3 grid-rows-2 gap-2 cursor-pointer">
           {filledImages.slice(0, 3).map((image, index) =>
             image ? (
@@ -33,9 +35,11 @@ function CollectionCard({ images = [], category, handleModal }) {
         </div>
       )}
 
-      <div className="p-4">
-        <h3 className="truncate text-lg font-semibold text-black">{category}</h3>
-        <span className="text-secondary text-sm">{images.length || 0} photos</span>
+      <div className="p-4 flex flex-col gap-1">
+        <Link to={`/collections/${userId}/${collectionId}`} className="cursor-pointer truncate text-lg font-semibold text-black hover:underline">
+          {category}
+        </Link>
+        <span className="text-secondary text-sm">{quantity} photos</span>
       </div>
     </article>
   );

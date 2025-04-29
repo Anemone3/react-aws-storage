@@ -95,7 +95,7 @@ export const deletePin = async (req, res) => {
   const { pinId } = req.params;
 
   try {
-    const deleted = await deletePinsById(pinId);
+    const deleted = await deletePinsById(Number(pinId));
 
     return res.status(200).json({ message: "pin deleted", pin: deleted });
   } catch (error) {

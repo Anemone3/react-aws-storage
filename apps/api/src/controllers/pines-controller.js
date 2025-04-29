@@ -1,5 +1,5 @@
 import { deleteFileFromS3, updloadFileToS3 } from "../services/s3-aws.js";
-import { createPinService, getAllPins, getPinesById } from "../services/pines-service.js";
+import { createPinService, deletePinsById, getAllPins, getPinesById } from "../services/pines-service.js";
 import { ApiError } from "../config/apiError.js";
 import { ACCESS_JWT_KEY } from "../config/config.js";
 import { decodeToken } from "../services/jwt-service.js";
@@ -88,5 +88,17 @@ export const getAllPinsController = async (req, res, next) => {
     res.status(200).json({ data: pins });
   } catch (error) {
     return res.status(500).json({ message: "Error al buscar pins", error: error.message || "Error check method" });
+  }
+};
+
+export const deletePin = async (req, res) => {
+  const { pinId } = req.params;
+
+  try {
+    const deleted = await deletePinsById(pinId);
+
+    return res.status(200).json({ message: "pin deleted", pin: deleted });
+  } catch (error) {
+    return res.status(500).json({ message: "Error to delete pin", error: error.message || "Error method DELETE pin" });
   }
 };

@@ -88,3 +88,17 @@ export const getAllPins = async (userId = null) => {
     throw new Error(error);
   }
 };
+
+export const deletePinsById = async (id) => {
+  try {
+    const pinDeleted = await prisma.pins.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return pinDeleted;
+  } catch (error) {
+    console.log(error);
+  }
+};

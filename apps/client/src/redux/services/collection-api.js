@@ -20,10 +20,11 @@ export const collectionApi = baseApi.injectEndpoints({
           : [{ type: 'Collections', id: 'LIST' }],
     }),
     createCollection: builder.mutation({
-      query: ({ userId, title }) => ({
+      query: ({ userId, title, isPublic }) => ({
         url: `/collection/${userId}/collections`,
         body: {
           title,
+          isPublic,
         },
         method: 'POST',
       }),

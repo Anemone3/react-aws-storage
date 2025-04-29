@@ -4,10 +4,10 @@
  * @param {string} props.category - Categoría de la colección.
  * @param {number} props.quantity - Cantidad de elementos en la colección.
  */
-
+import {} from 'lucide-react';
 import { Link } from 'react-router';
 
-function CollectionCard({ images: pins = [], collectionId, userId, handleModal, quantity, category }) {
+function CollectionCard({ images: pins = [], collectionId, userId, handleModal, quantity, category, isPublic }) {
   const filledImages = pins.length < 3 ? [...pins, ...Array(3 - pins.length).fill(null)] : pins;
 
   return (
@@ -36,9 +36,23 @@ function CollectionCard({ images: pins = [], collectionId, userId, handleModal, 
       )}
 
       <div className="p-4 flex flex-col gap-1">
-        <Link to={`/collections/${userId}/${collectionId}`} className="cursor-pointer truncate text-lg font-semibold text-black hover:underline">
-          {category}
-        </Link>
+        <div className="flex flex-row items-center justify-between">
+          <Link to={`/collections/${userId}/${collectionId}`} className="cursor-pointer truncate text-lg font-semibold text-black hover:underline">
+            {category}
+          </Link>
+          <div>
+            {!isPublic && (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                />
+              </svg>
+            )}
+          </div>
+        </div>
         <span className="text-secondary text-sm">{quantity} photos</span>
       </div>
     </article>

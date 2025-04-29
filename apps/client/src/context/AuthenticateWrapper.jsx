@@ -1,10 +1,9 @@
-import { Outlet, useNavigate, useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { useAuthentication } from '../hooks/useAuthentication';
 import { useEffect } from 'react';
 
-const AuthenticationRouter = () => {
+export const AuthenticateWrapper = ({ children }) => {
   const [searchParam] = useSearchParams();
-
   const navigate = useNavigate();
   const tokenProvider = searchParam.get('auth') || null;
 
@@ -22,7 +21,5 @@ const AuthenticationRouter = () => {
     }
   }, [data, tokenProvider]);
 
-  return <Outlet />;
+  return children;
 };
-
-export default AuthenticationRouter;

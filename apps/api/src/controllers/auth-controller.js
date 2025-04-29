@@ -105,7 +105,7 @@ export const refreshAccessToken = async (req, res, next) => {
   //console.log("COOKIES DISPONIBLES:", req.cookies);
 
   //console.log("body", req.body);
-  let tokenProvider = refreshToken || req.body.provideAuth;
+  let tokenProvider = req.body.provideAuth || refreshToken;
 
   if (refreshToken && req.body.provideAuth) {
     tokenProvider = refreshToken;
@@ -114,7 +114,7 @@ export const refreshAccessToken = async (req, res, next) => {
   let payload;
 
   try {
-    console.log("Token provider", tokenProvider);
+    // console.log("Token provider", tokenProvider);
     payload = await verifyToken(tokenProvider, ACCESS_JWT_KEY);
 
     if (!payload) {
@@ -123,7 +123,7 @@ export const refreshAccessToken = async (req, res, next) => {
 
     let user;
     if (payload.provider) {
-      console.log("Entre desde el provider", { ...payload });
+      // console.log("Entre desde el provider", { ...payload });
       user = await getUserByProvider(payload.provider, payload.id);
 
       res.clearCookie("provideAuth");
@@ -137,7 +137,7 @@ export const refreshAccessToken = async (req, res, next) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
     } else {
-      console.log("Entre desde el email", { ...payload });
+      // console.log("Entre desde el email", { ...payload });
       user = await getUserByEmail(payload.email);
     }
 

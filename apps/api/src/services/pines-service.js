@@ -1,15 +1,8 @@
 import { ApiError } from "../config/apiError.js";
 import { prisma } from "../config/prisma.js";
 
-export const createPinService = async ({
-  userId,
-  title,
-  description,
-  imageUrl,
-  collectionId,
-}) => {
+export const createPinService = async ({ userId, title, description, imageUrl, collectionId }) => {
   try {
-    
     const pin = await prisma.pins.create({
       data: {
         userId,
@@ -19,9 +12,7 @@ export const createPinService = async ({
         link: imageUrl,
         collections: collectionId
           ? {
-              create: [
-                { collection: { connect: { id: Number(collectionId) } } },
-              ],
+              create: [{ collection: { connect: { id: Number(collectionId) } } }],
             }
           : undefined,
       },
@@ -31,7 +22,6 @@ export const createPinService = async ({
           omit: { password: true },
         },
       },
-      
     });
 
     return pin;
@@ -62,21 +52,38 @@ export const getPinesById = async (id) => {
   }
 };
 
-export const getAllPins = async () => {
+export const getAllPins = async (userId = null) => {
   try {
+    console.log("userid", userId);
+
     const pins = await prisma.pins.findMany({
       include: {
-        collections: true,
         user: {
           omit: { password: true },
         },
+        collections: userId
+          ? {
+              where: {
+                collection: {
+                  userId: userId,
+                },
+              },
+              select: {
+                collectionId: true,
+              },
+            }
+          : false,
       },
       orderBy: {
         createdAt: "desc",
       },
     });
+    const pinsWithIsSaved = pins.map((pin) => ({
+      ...pin,
+      isSaved: pin.collections && pin.collections.length > 0,
+    }));
 
-    return pins;
+    return pinsWithIsSaved;
   } catch (error) {
     throw new Error(error);
   }

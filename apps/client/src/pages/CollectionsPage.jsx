@@ -6,6 +6,7 @@ import ModalPin from '../components/ModalPin';
 
 function CollectionsPage() {
   const { userId } = useParams();
+
   const { data, isLoading } = useGetAllCollectionsQuery(userId);
   const { showModal } = useModal();
   const location = useLocation();

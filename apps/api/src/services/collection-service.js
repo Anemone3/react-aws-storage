@@ -11,11 +11,12 @@ export const getCollectionsByTitle = async (title) => {
   return collection;
 };
 
-export const createCollection = async (title, id) => {
+export const createCollection = async (title, id, isPublic) => {
   const collection = await prisma.collections.create({
     data: {
       userId: id,
       name: title,
+      isPublic,
     },
   });
 

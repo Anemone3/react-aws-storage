@@ -1,10 +1,9 @@
 import { deleteFileFromS3, updloadFileToS3 } from "../services/s3-aws.js";
-import {
-  createPinService,
-  getAllPins,
-  getPinesById,
-} from "../services/pines-service.js";
+import { createPinService, getAllPins, getPinesById } from "../services/pines-service.js";
 import { ApiError } from "../config/apiError.js";
+import { ACCESS_JWT_KEY } from "../config/config.js";
+import { decodeToken } from "../services/jwt-service.js";
+import { getUserByEmail } from "../services/user-service.js";
 
 export const createPins = async (req, res) => {
   const file = req.file;
@@ -57,9 +56,7 @@ export const getPins = async (req, res, next) => {
   const { id } = req.params;
 
   if (!id || isNaN(Number(id))) {
-    return res
-      .status(400)
-      .json({ message: "Id in params not exists or is not a number" });
+    return res.status(400).json({ message: "Id in params not exists or is not a number" });
   }
 
   const pin = await getPinesById(id);
@@ -68,11 +65,28 @@ export const getPins = async (req, res, next) => {
 };
 
 export const getAllPinsController = async (req, res, next) => {
-  const pins = await getAllPins();
-
-  if (!pins) {
-    return res.status(404).json({ message: "Pins not found" });
+  let isUser = null;
+  const authorization = req.headers["authorization"];
+  console.log("lleguee2");
+  if (authorization) {
+    const token = authorization.split(" ")[1] || "";
+    const payload = decodeToken(token, ACCESS_JWT_KEY);
+    const userPayload = await getUserByEmail(payload.email);
+    console.log("lleguee");
+    if (userPayload && userPayload.id) {
+      isUser = userPayload.id;
+    }
   }
 
-  res.status(200).json({ data: pins });
+  try {
+    const pins = await getAllPins(isUser);
+
+    if (!pins) {
+      return res.status(404).json({ message: "Pins not found" });
+    }
+
+    res.status(200).json({ data: pins });
+  } catch (error) {
+    return res.status(500).json({ message: "Error al buscar pins", error: error.message || "Error check method" });
+  }
 };

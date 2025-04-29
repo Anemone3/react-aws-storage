@@ -8,7 +8,7 @@ const router = Router();
 router.patch(
   "/:id",
   AuthMiddleware.validateJwt,
-  AuthMiddleware.ownerShip({ request: "params", key: "id" }),
+  AuthMiddleware.ownerShip({ request: "params", key: "id", resource: null }),
   multerErrorHandler(uploadFileMiddleware.single("file")),
   updateUserData
 );

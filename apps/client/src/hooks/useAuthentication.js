@@ -16,7 +16,6 @@ export const useAuthentication = body => {
         console.log('body', body);
         try {
           console.log(hasRefreshed);
-
           await refreshToken(body).unwrap();
         } catch (error) {
           // console.error("Auth failed:", error);

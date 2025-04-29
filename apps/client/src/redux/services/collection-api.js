@@ -1,23 +1,23 @@
-import { baseApi } from "./base-api";
+import { baseApi } from './base-api';
 
 export const collectionApi = baseApi.injectEndpoints({
-  reducerPath: "collectionApi",
-  endpoints: (builder) => ({
+  reducerPath: 'collectionApi',
+  endpoints: builder => ({
     getAllCollections: builder.query({
-      query: (userId) => ({
+      query: userId => ({
         url: `/collection/${userId}`,
-        method: "GET",
+        method: 'GET',
       }),
-      providesTags: (result) =>
+      providesTags: result =>
         result?.collections
           ? [
               ...result.collections.map(({ id }) => ({
-                type: "Collections",
+                type: 'Collections',
                 id,
               })),
-              { type: "Collections", id: "LIST" },
+              { type: 'Collections', id: 'LIST' },
             ]
-          : [{ type: "Collections", id: "LIST" }],
+          : [{ type: 'Collections', id: 'LIST' }],
     }),
     createCollection: builder.mutation({
       query: ({ userId, title }) => ({
@@ -25,12 +25,18 @@ export const collectionApi = baseApi.injectEndpoints({
         body: {
           title,
         },
-        method: "POST",
+        method: 'POST',
       }),
-      invalidatesTags: [{ type: "Collections", id: "LIST" }],
+      invalidatesTags: [{ type: 'Collections', id: 'LIST' }],
+    }),
+    addPinToCollection: builder.mutation({
+      query: ({ collectionId, pinId }) => ({
+        url: `/collection/${collectionId}/pins/${pinId}`,
+        method: 'POST',
+      }),
+      invalidatesTags: [{ type: 'Collections', id: 'LIST' }],
     }),
   }),
 });
 
-export const { useCreateCollectionMutation, useGetAllCollectionsQuery } =
-  collectionApi;
+export const { useCreateCollectionMutation, useGetAllCollectionsQuery, useAddPinToCollectionMutation } = collectionApi;

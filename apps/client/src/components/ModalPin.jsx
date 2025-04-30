@@ -44,7 +44,14 @@ function ModalPin({ collections, userId, collectionId: collectionIndex }) {
       return true;
     });
 
-    if (!isValid) return;
+    if (!isValid) {
+      setFormErrors(p => ({
+        ...p,
+        description: 'Titulo o descripción deben tener mas de 2 caracters',
+      }));
+      return;
+    }
+
     if (!pin) return;
 
     const formData = new FormData();
@@ -85,6 +92,7 @@ function ModalPin({ collections, userId, collectionId: collectionIndex }) {
       <div className="animate-in fade-in w-full max-w-2xl overflow-hidden rounded-lg bg-white shadow-xl duration-300">
         <div className="relative flex items-center justify-between border-b p-4">
           <h2 className="text-xl font-semibold">Agregar imagen a la galería</h2>
+
           <button
             type="button"
             className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full transition-colors hover:bg-gray-100"
@@ -108,6 +116,7 @@ function ModalPin({ collections, userId, collectionId: collectionIndex }) {
             </svg>
           </button>
         </div>
+
         <AddPinCard
           handleSubmit={handleSubmit}
           onChange={onInputChange}

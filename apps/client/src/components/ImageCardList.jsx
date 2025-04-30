@@ -9,8 +9,6 @@ const ImageCardList = ({ imageUrl, title, description, user, createdAt, id, isSa
     return state.auth.user?.id;
   });
 
-  console.log(isSavedUser);
-
   const [addPinToCollection, {}] = useAddPinToCollectionMutation();
   const { formattedDate } = useFormtDate(createdAt);
   const [showCollectionSelector, setShowCollectionSelector] = useState(false);

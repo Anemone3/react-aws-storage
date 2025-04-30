@@ -7,7 +7,7 @@ import { ModalCollection } from '../components/ModalCollection';
 import { useModal } from '../hooks/useModal';
 
 const CollectionList = () => {
-  const { data, collections, userId } = useOutletContext();
+  const { collections, userId } = useOutletContext();
   const { showModal } = useModal();
   const [openCollectionCardModal, setOpenCollectionCardModal] = useState(false);
 
@@ -17,7 +17,7 @@ const CollectionList = () => {
 
   return (
     <>
-      {data && (
+      {collections && (
         <>
           {collections.length === 0 && <AddCollectionCard openModal={handleModal} />}
 

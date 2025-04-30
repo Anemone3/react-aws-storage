@@ -119,8 +119,8 @@ const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormSta
               </option>
             ))}
           </select>
-          {formErrors.collectionId && <p className="text-sm text-red-500">{formErrors.collectionId}</p>}
         </div>
+        {formErrors.description?.length > 0 && <p className="text-red-500 text-md">{formErrors.description}</p>}
 
         {/* Imagen */}
         <ImageDrag
@@ -166,6 +166,7 @@ const AddPinCard = ({ handleSubmit, formState, onChange, collections, setFormSta
           {isLoading ? 'Guardando..' : 'Guardar imagen'}
         </button>
       </div>
+      {formErrors.collectionId && <p className="text-sm text-red-500">{formErrors.collectionId}</p>}
     </form>
   );
 };

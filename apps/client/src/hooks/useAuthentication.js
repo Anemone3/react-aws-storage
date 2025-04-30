@@ -13,9 +13,7 @@ export const useAuthentication = body => {
     if (!hasRefreshed.current) {
       const checkAuth = async () => {
         // console.log("Verificando Token");
-        console.log('body', body);
         try {
-          console.log(hasRefreshed);
           await refreshToken(body).unwrap();
         } catch (error) {
           // console.error("Auth failed:", error);

@@ -11,8 +11,6 @@ export const fetchBaseWithAuth =
       prepareHeaders: (headers, { getState }) => {
         const { accessToken } = getState().auth;
 
-        console.log({ accessToken });
-
         if (accessToken) {
           headers.set('Authorization', `Bearer ${accessToken}`);
         }

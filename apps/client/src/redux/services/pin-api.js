@@ -17,15 +17,16 @@ export const pinApi = baseApi.injectEndpoints({
       async onQueryStarted({ userId }, { dispatch, queryFulfilled }) {
         try {
           const result = await queryFulfilled;
-          //console.log("Full response:", result);
+          console.log('Full response:', result);
 
           if (!result.data?.data) return;
 
           const createdPin = result.data;
 
-          // console.log("Created Pin:", createdPin);
+          console.log('Created Pin:', createdPin);
           dispatch(
             pinApi.util.updateQueryData('getPins', undefined, draft => {
+              console.log('draft?', draft);
               if (!draft.data.some(pin => pin.id === createdPin.data.id)) {
                 draft.data.unshift(createdPin.data);
               }

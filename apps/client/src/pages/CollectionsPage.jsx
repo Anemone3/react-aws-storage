@@ -1,23 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useGetAllCollectionsQuery } from '../redux/services/collection-api';
 import { useModal } from '../hooks/useModal';
 import ModalPin from '../components/ModalPin';
+import { useSelector } from 'react-redux';
 
 function CollectionsPage() {
   const { userId } = useParams();
+  const accessToken = useSelector(state => state.auth.accessToken);
 
-  const { data, isLoading } = useGetAllCollectionsQuery(userId);
+  const { data, isLoading, refetch } = useGetAllCollectionsQuery(userId);
+
+  useEffect(() => {
+    if (accessToken !== undefined) {
+      refetch();
+    }
+  }, [accessToken, refetch]);
+
   const { showModal } = useModal();
   const location = useLocation();
-  const collections = data?.collections || [];
 
   const isOnCollectionsPage = location.pathname === `/collections/${userId}`;
 
   return (
     <section className="relative container mx-auto flex max-w-screen flex-col items-center justify-center space-y-4">
       <button
-        onClick={() => showModal(<ModalPin collections={collections} userId={userId} />)}
+        onClick={() => showModal(<ModalPin collections={data?.collections || []} userId={userId} />)}
         className="absolute top-5 right-6 cursor-pointer rounded-lg bg-pink-100 px-3 py-2 font-semibold text-slate-700 hover:bg-pink-300"
       >
         Create a Pin
@@ -29,7 +37,7 @@ function CollectionsPage() {
       )}
 
       <div className="mt-5 grid w-full grid-cols-3 gap-x-4 gap-y-10 min-[1340px]:mx-10 lg:container">
-        {isLoading ? <p>Loading...</p> : <Outlet context={{ data, collections, userId }} />}
+        {isLoading && data ? <div> linz </div> : <Outlet context={{ collections: data?.collections, userId }} />}
       </div>
     </section>
   );

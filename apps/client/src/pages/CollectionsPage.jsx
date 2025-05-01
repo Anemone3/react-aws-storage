@@ -10,12 +10,12 @@ function CollectionsPage() {
   const accessToken = useSelector(state => state.auth.accessToken);
 
   const { data, isLoading, refetch } = useGetAllCollectionsQuery(userId);
-
+  /* Podria manejar si esta logeado y depende de ese estado la ejecución del refetch */
   useEffect(() => {
     if (accessToken !== undefined) {
       refetch();
     }
-  }, [accessToken, refetch]);
+  }, [accessToken]);
 
   const { showModal } = useModal();
   const location = useLocation();

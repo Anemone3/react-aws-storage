@@ -5,13 +5,18 @@ import { useEffect } from 'react';
 
 const GalleryPage = () => {
   const tokenExits = useSelector(state => state.auth.accessToken);
-  const { data: Pins, refetch } = useGetPinsQuery();
+  const { data: Pins, refetch } = useGetPinsQuery(undefined, {
+    refetchOnFocus: !tokenExits,
+  });
+
+  console.log('me ejecute1');
 
   useEffect(() => {
     if (tokenExits) {
+      console.log('me ejecute');
       refetch();
     }
-  }, [refetch, tokenExits]);
+  }, [tokenExits]);
 
   return (
     <div className="container mx-auto mt-6 mb-16 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

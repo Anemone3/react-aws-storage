@@ -14,19 +14,26 @@ datasource db {
 }
 
 model Users {
-  id          String        @id @default(uuid()) @db.Uuid
-  email       String        @unique @db.VarChar()
-  username    String        @db.VarChar(60)
-  firstname   String        @db.VarChar(20)
-  lastname    String        @db.VarChar(20)
-  password    String?       @db.VarChar(100)
-  profileUrl  String?       @default("https://d2mx8x2zaiqruv.cloudfront.net/public/icon.png")
-  providerId  String?       @unique @db.VarChar(100)
-  provider    ProviderAuth  @default(LOCAL)
-  pins        Pins[]
-  collections Collections[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                String              @id @default(uuid()) @db.Uuid
+  email             String              @unique @db.VarChar()
+  username          String              @db.VarChar(60)
+  firstname         String              @db.VarChar(20)
+  lastname          String              @db.VarChar(20)
+  password          String?             @db.VarChar(100)
+  profileUrl        String?             @default("https://d2mx8x2zaiqruv.cloudfront.net/public/icon.png")
+  providerId        String?             @unique @db.VarChar(100)
+  provider          ProviderAuth        @default(LOCAL)
+  role              UserRole            @default(USER)
+  pins              Pins[]
+  collections       Collections[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  PinsOnCollections PinsOnCollections[]
+}
+
+enum UserRole {
+  USER
+  ADMIN
 }
 
 enum ProviderAuth {
@@ -41,7 +48,7 @@ enum ProviderAuth {
 model Collections {
   id          Int                 @id @default(autoincrement())
   name        String              @db.VarChar(25)
-  description String?
+  description String?             @db.Text
   quantity    Int                 @default(0)
   isPublic    Boolean             @default(true)
   createdAt   DateTime            @default(now())
@@ -49,15 +56,19 @@ model Collections {
   userId      String              @db.Uuid
   user        Users               @relation(fields: [userId], references: [id])
   pins        PinsOnCollections[]
+
+  @@index([name])
 }
 
 model PinsOnCollections {
   id           Int         @id @default(autoincrement())
   pinId        Int
   collectionId Int
+  userId       String      @db.Uuid
   addedAt      DateTime    @default(now())
   pin          Pins        @relation(fields: [pinId], references: [id], onDelete: Cascade)
   collection   Collections @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  user         Users       @relation(fields: [userId], references: [id])
 
   @@unique([pinId, collectionId])
 }

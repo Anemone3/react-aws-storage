@@ -1,5 +1,5 @@
-import { clearAuthenticate, setAuthenticate } from '../features/auth-slice';
 import { baseApi } from './base-api';
+import { clearAuthenticate, setAuthenticate } from '../features/auth-slice';
 
 export const authApi = baseApi.injectEndpoints({
   endpoints: builder => ({

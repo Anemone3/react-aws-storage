@@ -22,10 +22,6 @@ passport.use(
       callbackURL: GOOGLE_CALLBACK_URL,
     },
     (accessToken, refreshToken, profile, done) => {
-      // console.log("profile desde el passport", profile);
-      // console.log("accessToken desde el passport", accessToken);
-      // console.log("refreshToken desde el passport", refreshToken);
-
       (async () => {
         try {
           const user = await prisma.users.upsert({

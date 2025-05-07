@@ -26,7 +26,7 @@ export const ModalCollection = ({ isOpen, onClose }) => {
             title,
             isPublic,
           }).unwrap();
-          console.log(result);
+
           //   dispatch(
           //     collectionApi.util.invalidateTags([
           //       { type: "Collection", id: userId },

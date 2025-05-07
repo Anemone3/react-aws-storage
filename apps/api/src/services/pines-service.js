@@ -12,7 +12,18 @@ export const createPinService = async ({ userId, title, description, imageUrl, c
         link: imageUrl,
         collections: collectionId
           ? {
-              create: [{ collection: { connect: { id: Number(collectionId) } } }],
+              create: [
+                {
+                  collection: {
+                    connect: { id: parseInt(collectionId) },
+                  },
+                  user: {
+                    connect: {
+                      id: userId,
+                    },
+                  },
+                },
+              ],
             }
           : undefined,
       },

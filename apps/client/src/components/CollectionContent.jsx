@@ -2,15 +2,19 @@
 
 import { Link, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, MoreHorizontal } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DropDownPin from './DropDownPin';
 
 const CollectionContent = () => {
   const { collections, userId } = useOutletContext();
   const { collectionId } = useParams();
   const navigate = useNavigate();
-  const collection = collections.find(collection => collection.id === Number(collectionId));
+  const [collection, setCollection] = useState(collections ? collections.find(collection => collection.id === Number(collectionId)) : []);
   const [openMenuId, setOpenMenuId] = useState(null);
+
+  useEffect(() => {
+    setCollection(collections ? collections.find(collection => collection.id === Number(collectionId)) : []);
+  }, [collections]);
 
   const toggleMenu = id => {
     if (openMenuId === id) {
@@ -48,7 +52,7 @@ const CollectionContent = () => {
               <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl md:text-5xl">{collection.name}</h1>
               <p className="mt-2 text-lg text-gray-600">{collection.description || 'Not description for this collection'}</p>
               <div className="mt-1 flex items-center text-sm text-gray-500">
-                <span>{collection.pins.length} pins</span>
+                <span>{collection.pins?.length} pins</span>
                 <span className="mx-2">•</span>
               </div>
             </div>
@@ -104,7 +108,7 @@ const CollectionContent = () => {
                     </button>
 
                     {/* Menú desplegable */}
-                    {openMenuId === pin.id && <DropDownPin pin={pin} closeAllMenus={closeAllMenus} />}
+                    {openMenuId === pin.id && <DropDownPin pin={pin} collectionId={collectionId} closeAllMenus={closeAllMenus} />}
                   </div>
                 </div>
               </div>

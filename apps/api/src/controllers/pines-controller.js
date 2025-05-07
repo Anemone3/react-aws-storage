@@ -67,12 +67,12 @@ export const getPins = async (req, res, next) => {
 export const getAllPinsController = async (req, res, next) => {
   let isUser = null;
   const authorization = req.headers["authorization"];
-  console.log("lleguee2");
+
   if (authorization) {
     const token = authorization.split(" ")[1] || "";
     const payload = decodeToken(token, ACCESS_JWT_KEY);
     const userPayload = await getUserByEmail(payload.email);
-    console.log("lleguee");
+
     if (userPayload && userPayload.id) {
       isUser = userPayload.id;
     }

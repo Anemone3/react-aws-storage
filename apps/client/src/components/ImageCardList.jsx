@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAddPinToCollectionMutation } from '../redux/services/collection-api';
 import { useSelector } from 'react-redux';
 import CollectionSelector from './CollectionSelectorGallery';
@@ -8,7 +9,7 @@ const ImageCardList = ({ imageUrl, title, description, user, createdAt, id, isSa
   const loggedInUserId = useSelector(state => {
     return state.auth.user?.id;
   });
-
+  const navigate = useNavigate();
   const [addPinToCollection, {}] = useAddPinToCollectionMutation();
   const { formattedDate } = useFormtDate(createdAt);
   const [showCollectionSelector, setShowCollectionSelector] = useState(false);
@@ -31,8 +32,6 @@ const ImageCardList = ({ imageUrl, title, description, user, createdAt, id, isSa
 
   const handleSaveToCollection = async collectionId => {
     try {
-      console.log('post to:', {});
-
       await addPinToCollection({ collectionId: Number(collectionId), pinId: Number(id) });
       setIsSaved(true);
       setSaveAnimation(true);
@@ -134,6 +133,7 @@ const ImageCardList = ({ imageUrl, title, description, user, createdAt, id, isSa
             <img
               src={user.profileUrl || '/placeholder.svg?height=100&width=100'}
               alt={user.username}
+              className="cursor-pointer"
               style={{
                 position: 'absolute',
                 top: 0,
@@ -141,6 +141,9 @@ const ImageCardList = ({ imageUrl, title, description, user, createdAt, id, isSa
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
+              }}
+              onClick={() => {
+                navigate(`/collections/${user.id}`);
               }}
               onError={e => {
                 e.target.src = '/placeholder.svg?height=100&width=100';

@@ -73,7 +73,7 @@ export const addPinCollectionByPinId = async (collectionId, pinId, id) => {
     },
   });
   if (existingRelation) {
-    if (existingRelation.collection.userId !== String(id)) {
+    if (existingRelation.userId !== String(id)) {
       throw new ApiError("El pin no pertenece a la colección de este usuario", 403);
     }
     throw new ApiError("El pin ya está agregado en la colección", 400);
@@ -83,8 +83,39 @@ export const addPinCollectionByPinId = async (collectionId, pinId, id) => {
     data: {
       pinId: pinIdInt,
       collectionId: collectionIdInt,
+      userId: id,
     },
   });
 
   return newRelation;
+};
+
+export const removePinToCollecionByPinId = async (collectionId, pinId, userId) => {
+  try {
+    const pinRelation = await prisma.pinsOnCollections.findFirst({
+      where: {
+        pinId,
+        collectionId,
+        userId, // Validación directa
+      },
+    });
+
+    if (!pinRelation) {
+      throw new ApiError("No tienes permiso para eliminar este pin o no existe", 403);
+    }
+
+    const pinRemove = await prisma.pinsOnCollections.delete({
+      where: {
+        pinId_collectionId: {
+          pinId,
+          collectionId,
+        },
+      },
+    });
+
+    return pinRemove;
+  } catch (error) {
+    console.log(error);
+    throw new ApiError("Error to remove Pin on Collection", 500);
+  }
 };

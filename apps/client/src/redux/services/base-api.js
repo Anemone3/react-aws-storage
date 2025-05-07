@@ -7,14 +7,3 @@ export const baseApi = createApi({
   tagTypes: ['Pins', 'Collections'],
   endpoints: () => ({}),
 });
-
-export const getRefreshToken = async api => {
-  await api.dispatch(authApi.endpoints.refreshToken.initiate()).unwrap();
-
-  // api.dispatch(
-  //   setAuthenticate({
-  //     accessToken,
-  //     user: data,
-  //   }),
-  // );
-};

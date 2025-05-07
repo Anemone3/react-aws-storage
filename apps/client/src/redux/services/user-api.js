@@ -12,7 +12,6 @@ export const userApi = baseApi.injectEndpoints({
       async onQueryStarted(_, { dispatch, queryFulfilled, getState }) {
         try {
           const result = await queryFulfilled;
-          console.log('data en onQueryStar', result.data?.data);
           const user = result.data?.data;
           if (!user) return;
           const currentAccessToken = getState().auth.accessToken;

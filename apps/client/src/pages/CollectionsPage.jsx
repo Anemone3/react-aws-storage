@@ -9,13 +9,12 @@ function CollectionsPage() {
   const { userId } = useParams();
   const accessToken = useSelector(state => state.auth.accessToken);
 
-  const { data, isLoading, refetch } = useGetAllCollectionsQuery(userId);
-  /* Podria manejar si esta logeado y depende de ese estado la ejecución del refetch */
-  useEffect(() => {
-    if (accessToken !== undefined) {
-      refetch();
-    }
-  }, [accessToken]);
+  const { data, isLoading } = useGetAllCollectionsQuery(
+    { userId, accessToken },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
 
   const { showModal } = useModal();
   const location = useLocation();

@@ -1,13 +1,14 @@
-'use client';
-
+import { useModal } from '../hooks/useModal';
 import { Link, useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ArrowLeft, Plus, MoreHorizontal } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import DropDownPin from './DropDownPin';
+import ModalPin from './ModalPin';
 
 const CollectionContent = () => {
   const { collections, userId } = useOutletContext();
   const { collectionId } = useParams();
+  const { showModal } = useModal();
   const navigate = useNavigate();
   const [collection, setCollection] = useState(collections ? collections.find(collection => collection.id === Number(collectionId)) : []);
   const [openMenuId, setOpenMenuId] = useState(null);
@@ -23,6 +24,11 @@ const CollectionContent = () => {
       setOpenMenuId(id);
     }
   };
+
+  const handleCreatePin = () => {
+    showModal(<ModalPin collectionId={collectionId} collections={collections} userId={userId} />);
+  };
+
   const closeAllMenus = () => {
     setOpenMenuId(null);
   };
@@ -119,10 +125,7 @@ const CollectionContent = () => {
             <p className="text-lg text-gray-500 mb-4">Esta colección no tiene pines todavía</p>
             <button
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-rose-500 hover:bg-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rose-400 transition-colors"
-              onClick={() => {
-                // Aquí puedes mostrar el modal para crear un pin
-                console.log('Crear pin para colección:', collection.id);
-              }}
+              onClick={handleCreatePin}
             >
               <Plus className="h-4 w-4 mr-1" />
               Crear el primer pin

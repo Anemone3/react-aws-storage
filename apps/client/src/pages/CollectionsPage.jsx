@@ -6,8 +6,9 @@ import ModalPin from '../components/ModalPin';
 import { useSelector } from 'react-redux';
 
 function CollectionsPage() {
-  const { userId } = useParams();
+  const { userId, collectionId } = useParams();
   const accessToken = useSelector(state => state.auth.accessToken);
+  const [showButton, setShowButton] = useState(false);
 
   const { data, isLoading } = useGetAllCollectionsQuery(
     { userId, accessToken },
@@ -21,14 +22,26 @@ function CollectionsPage() {
 
   const isOnCollectionsPage = location.pathname === `/collections/${userId}`;
 
+  useEffect(() => {
+    if (data) {
+      let pinsOnCollectionExists = data.collections.find(e => e.id === Number(collectionId));
+
+      if (pinsOnCollectionExists && pinsOnCollectionExists.pins.length > 0) {
+        setShowButton(true);
+      }
+    }
+  }, [collectionId]);
+
   return (
     <section className="relative container mx-auto flex max-w-screen flex-col items-center justify-center space-y-4">
-      <button
-        onClick={() => showModal(<ModalPin collections={data?.collections || []} userId={userId} />)}
-        className="absolute top-5 right-6 cursor-pointer rounded-lg bg-pink-100 px-3 py-2 font-semibold text-slate-700 hover:bg-pink-300"
-      >
-        Create a Pin
-      </button>
+      {data?.collections && showButton && (
+        <button
+          onClick={() => showModal(<ModalPin collections={data?.collections || []} userId={userId} />)}
+          className="absolute top-5 right-6 cursor-pointer rounded-lg bg-pink-100 px-3 py-2 font-semibold text-slate-700 hover:bg-pink-300"
+        >
+          Create a Pin
+        </button>
+      )}
       {isOnCollectionsPage && (
         <h1 className="mt-5 bg-[url('/gradiend-bg@2x.png')] bg-cover bg-clip-text bg-center bg-no-repeat text-center text-6xl font-bold text-transparent">
           Collections

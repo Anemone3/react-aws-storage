@@ -94,7 +94,7 @@ const ImageCardList = ({ imageUrl, title, description, user, createdAt, id, isSa
         </div>
 
         {/* Botón de guardar */}
-        {loggedInUserId && (
+        {loggedInUserId && user.id && (
           <button
             className="absolute top-2 right-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90"
             onClick={toggleCollectionSelector}

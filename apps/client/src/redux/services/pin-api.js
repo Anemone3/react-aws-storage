@@ -1,11 +1,14 @@
 import { collectionApi } from './collection-api';
-import { current } from '@reduxjs/toolkit';
 import { baseApi } from './base-api';
 
 export const pinApi = baseApi.injectEndpoints({
   endpoints: builder => ({
     getPins: builder.query({
-      query: () => '/pins',
+      query: (params = {}) => {
+        const { page = 1 } = params || {};
+
+        return `/pins?page=${page}`;
+      },
       providesTags: result =>
         result?.data
           ? [
@@ -87,4 +90,4 @@ export const pinApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreatePinMutation, useGetPinsQuery } = pinApi;
+export const { useCreatePinMutation, useGetPinsQuery, useLazyGetPinsQuery } = pinApi;

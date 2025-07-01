@@ -17,6 +17,8 @@ export const envsSchema = z.object({
   FRONTEND_URL: z.string().min(1, "FRONTEND_URL is required"),
   BACKEND_URL: z.string().min(1, "BACKEND_URL is required"),
   NODE_ENV: z.enum(["development", "production"]).default("development"),
+  API_SPLASH_URL: z.string().min(3, "API_SPLASH_URL is required"),
+  API_SPLASH_KEY: z.string().min(3, "API_SPLASH_KEY is required"),
 });
 
 const { success, data, error } = envsSchema.safeParse(process.env);
@@ -40,4 +42,6 @@ export const {
   FRONTEND_URL,
   BACKEND_URL,
   NODE_ENV,
+  API_SPLASH_URL,
+  API_SPLASH_KEY,
 } = data;

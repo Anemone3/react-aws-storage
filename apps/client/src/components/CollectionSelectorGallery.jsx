@@ -8,9 +8,7 @@ export default function CollectionSelector({ userId, onSave, onClose, pinId }) {
   const [searchTerm, setSearchTerm] = useState('');
   const selectorRef = useRef(null);
 
-  console.log(userId);
   const { data, isLoading } = useGetAllCollectionsQuery({ userId });
-  console.log('me hice fetch', data);
 
   let filteredCollections = [];
 

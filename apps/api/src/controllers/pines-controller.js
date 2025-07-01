@@ -4,6 +4,7 @@ import { ApiError } from "../config/apiError.js";
 import { ACCESS_JWT_KEY } from "../config/config.js";
 import { decodeToken } from "../services/jwt-service.js";
 import { getUserByEmail } from "../services/user-service.js";
+import { searchPhotos } from "../api/unsplashApi.js";
 
 export const createPins = async (req, res) => {
   const file = req.file;
@@ -67,6 +68,9 @@ export const getPins = async (req, res, next) => {
 export const getAllPinsController = async (req, res, next) => {
   let isUser = null;
   const authorization = req.headers["authorization"];
+  const { page } = req.query;
+
+  if (!page) throw new ApiError("Missing params", 400);
 
   if (authorization) {
     const token = authorization.split(" ")[1] || "";
@@ -85,7 +89,12 @@ export const getAllPinsController = async (req, res, next) => {
       return res.status(404).json({ message: "Pins not found" });
     }
 
-    res.status(200).json({ data: pins });
+    let photos = await searchPhotos({ page: page, per_page: 10 });
+    if (page == 1) {
+      photos = pins.concat(photos);
+    }
+
+    res.status(200).json({ data: photos });
   } catch (error) {
     return res.status(500).json({ message: "Error al buscar pins", error: error.message || "Error check method" });
   }

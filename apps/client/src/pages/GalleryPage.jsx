@@ -4,7 +4,7 @@ import { useLazyGetPinsQuery } from '../redux/services/pin-api';
 import { useEffect, useRef, useState } from 'react';
 const GalleryPage = () => {
   const accessToken = useSelector(state => state.auth.accessToken);
-  const [getPins, { data: Pins, isLoading, reset }] = useLazyGetPinsQuery();
+  const [getPins, { data: Pins, isLoading, isUninitialized }] = useLazyGetPinsQuery();
   const [hasMore, setHasMore] = useState(true);
   const [allPins, setAllPins] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -12,11 +12,10 @@ const GalleryPage = () => {
   const elementRef = useRef(null);
 
   useEffect(() => {
-    if (accessToken) {
-      reset();
+    if (isUninitialized) {
       getPins({ page: currentPage });
     }
-  }, [accessToken]);
+  }, [isUninitialized]);
 
   useEffect(() => {
     if (Pins) {
@@ -38,7 +37,7 @@ const GalleryPage = () => {
     });
     if (elementRef.current) observer.observe(elementRef.current);
     return () => observer.disconnect();
-  }, [currentPage, hasMore]);
+  }, [currentPage, hasMore, isLoading, getPins]);
 
   return (
     <div className="container mx-auto mt-6 mb-16 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

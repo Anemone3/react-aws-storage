@@ -22,7 +22,13 @@ const GalleryPage = () => {
       if (Pins.data.length === 0) {
         setHasMore(false);
       } else {
-        setAllPins(prev => [...prev, ...Pins.data]);
+        setAllPins(prev => {
+          if (currentPage == 1) {
+            return [...prev, ...Pins.data];
+          }
+
+          return [...prev, ...Pins.data.slice(1)];
+        });
         setCurrentPage(prev => prev + 1);
       }
     }

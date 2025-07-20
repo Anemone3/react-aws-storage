@@ -1,9 +1,7 @@
-import { useSelector } from 'react-redux';
 import ImageCardList from '../components/ImageCardList';
 import { useLazyGetPinsQuery } from '../redux/services/pin-api';
 import { useEffect, useRef, useState } from 'react';
 const GalleryPage = () => {
-  const accessToken = useSelector(state => state.auth.accessToken);
   const [getPins, { data: Pins, isLoading, isUninitialized }] = useLazyGetPinsQuery();
   const [hasMore, setHasMore] = useState(true);
   const [allPins, setAllPins] = useState([]);
@@ -15,7 +13,7 @@ const GalleryPage = () => {
     if (isUninitialized) {
       getPins({ page: currentPage });
     }
-  }, [isUninitialized]);
+  }, [isUninitialized, getPins, currentPage]);
 
   useEffect(() => {
     if (Pins) {
@@ -32,7 +30,7 @@ const GalleryPage = () => {
         setCurrentPage(prev => prev + 1);
       }
     }
-  }, [Pins]);
+  }, [Pins, currentPage]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {

@@ -4,7 +4,7 @@ import { useGetPinsQuery } from '../redux/services/pin-api';
 
 function CollectionPhotos() {
   const photosRef = useRef(null);
-  const { isFetching, data: Pins, isLoading, isSuccess } = useGetPinsQuery();
+  const { data: Pins, isLoading, isSuccess } = useGetPinsQuery();
   useEffect(() => {
     photosRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [Pins]);

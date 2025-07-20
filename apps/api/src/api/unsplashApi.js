@@ -7,8 +7,12 @@ const instance = axios.create({
   headers: { Authorization: `Client-ID ${API_SPLASH_KEY}` },
 });
 
-export const searchPhotos = async ({ page = 1, per_page = 10 }) => {
-  const data = await instance.get(`photos?page=${page}&per_page=${per_page}`);
+export const searchPhotos = async ({ page = 1, per_page = 10, query = "" }) => {
+  let find = !query ? `photos?page=${page}&per_page=${per_page}` : `photos?page=${page}&per_page=${per_page}&query=${query}`;
+
+  console.log(`FETCHING: ${find}`);
+
+  const data = await instance.get(find);
 
   const draft = data?.data.map((photo) => ({
     id: photo.id,

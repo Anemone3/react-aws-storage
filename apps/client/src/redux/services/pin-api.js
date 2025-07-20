@@ -5,9 +5,9 @@ export const pinApi = baseApi.injectEndpoints({
   endpoints: builder => ({
     getPins: builder.query({
       query: (params = {}) => {
-        const { page = 1 } = params || {};
+        const { page = 1, query } = params || {};
 
-        return `/pins?page=${page}`;
+        return query ? `/pins?page=${page}&query=${query}` : `/pins?page=${page}`;
       },
       providesTags: result =>
         result?.data

@@ -68,7 +68,9 @@ export const getPins = async (req, res, next) => {
 export const getAllPinsController = async (req, res, next) => {
   let isUser = null;
   const authorization = req.headers["authorization"];
-  const { page } = req.query;
+  const { page, query } = req.query;
+
+  console.log({ query });
 
   if (!page) throw new ApiError("Missing params", 400);
 
@@ -83,13 +85,18 @@ export const getAllPinsController = async (req, res, next) => {
   }
 
   try {
+    let photos = await searchPhotos({ page: page, per_page: 10, query: query });
+
+    if (query) {
+      return res.status(200).json({ data: photos });
+    }
+
     const pins = await getAllPins(isUser);
 
     if (!pins) {
       return res.status(404).json({ message: "Pins not found" });
     }
 
-    let photos = await searchPhotos({ page: page, per_page: 10 });
     if (page == 1) {
       photos = pins.concat(photos);
     }

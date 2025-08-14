@@ -17,7 +17,7 @@ export const searchPhotos = async ({ page = 1, per_page = 10, query = "" }) => {
   const draft = data?.data.map((photo) => ({
     id: photo.id,
     userId: null,
-    title: photo.alt_description.split(" ").splice(2),
+    title: photo.alt_description?.split(" ").splice(2),
     description: photo.alt_description,
     imageUrl: photo.urls.small,
     link: photo.links.html,
